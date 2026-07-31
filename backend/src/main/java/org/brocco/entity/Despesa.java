@@ -1,6 +1,6 @@
 package org.brocco.entity;
 
-import org.brocco.enums.TipoRecebimento;
+import org.brocco.enums.CategoriaDespesa;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.*;
@@ -8,43 +8,32 @@ import java.math.BigDecimal;
 import java.time.*;
 
 @Entity
-@Table(name = "recebimentos")
+@Table(name = "despesas")
 
-public class Recebimento extends PanacheEntity {
+public class Despesa extends PanacheEntity {
     
     @Column(name = "admin_id", nullable = false)
     public Long adminId;
 
     @Column(name = "data_prevista", nullable = false)
-    public LocalDate dataPrevistaRecebimento;
+    public LocalDate dataPrevistaPagamento;
 
-    @Column(name = "data_recebimento")
-    public LocalDate dataRecebimento;
+    @Column(name = "data_pagamento")
+    public LocalDate dataEfetivaPagamento;
 
     @Column(nullable = false)
     public BigDecimal valor;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-   
-    public TipoRecebimento tipo;
+    
+    public CategoriaDespesa categoria;
 
-    @Column(name = "recebido", nullable = false)
-    public Boolean recebido = false;
+    @Column(nullable = false)
+    public String despesa;
 
-    public String parcela;
-
-    @Column(name = "processo_id")
-    public Long processoId;
-
-    @Column(name = "processo_numero")
-    public String processoNumero;
-
-    @Column(name = "cliente_id")
-    public Long clienteId;
-
-    @Column(name = "cliente_nome")
-    public String clienteNome;
+    @Column(name = "pago", nullable = false)
+    public Boolean pago = false;
 
     @Column(columnDefinition = "TEXT")
     public String detalhes;
