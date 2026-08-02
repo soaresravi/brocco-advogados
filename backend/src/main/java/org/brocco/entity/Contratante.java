@@ -1,5 +1,7 @@
 package org.brocco.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.*;
 
@@ -9,6 +11,7 @@ import jakarta.persistence.*;
 public class Contratante extends PanacheEntity {
     
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "cliente_id", nullable = false)
 
     public Cliente cliente;
