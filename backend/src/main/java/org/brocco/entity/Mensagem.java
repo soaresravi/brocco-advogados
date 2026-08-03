@@ -15,7 +15,7 @@ public class Mensagem extends PanacheEntity {
     @Column(name = "destinatario_id", nullable = false)
     public Long destinatarioId;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     public String conteudo;
 
     @Column(name = "lida", nullable = false)

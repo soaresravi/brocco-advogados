@@ -40,7 +40,7 @@ public class Atendimento extends PanacheEntity {
     @Column(name = "valor_consulta")
     public BigDecimal valorConsulta = BigDecimal.ZERO;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     public String observacoes;
 
     @Column(name = "google_event_id")

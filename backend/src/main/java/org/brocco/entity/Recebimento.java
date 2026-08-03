@@ -46,7 +46,7 @@ public class Recebimento extends PanacheEntity {
     @Column(name = "cliente_nome")
     public String clienteNome;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     public String detalhes;
 
     @Column(name = "created_at")

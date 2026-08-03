@@ -34,7 +34,7 @@ public class Providencia extends PanacheEntity {
 
     public List<TipoProvidencia> itens = new ArrayList<>();
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     public String observacoes;
 
     @Column(name = "enviar_para_id")

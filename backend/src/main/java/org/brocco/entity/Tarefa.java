@@ -16,7 +16,7 @@ public class Tarefa extends PanacheEntity {
     @Column(name = "google_event_id")
     public String googleEventId;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     public String tarefa;
 
     @Column(name = "status")
@@ -46,7 +46,7 @@ public class Tarefa extends PanacheEntity {
     @Column(name = "cliente_nome")
     public String clienteNome;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     public String andamento;
 
     @Column(name = "created_at")

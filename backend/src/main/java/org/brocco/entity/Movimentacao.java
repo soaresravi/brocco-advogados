@@ -20,6 +20,6 @@ public class Movimentacao extends PanacheEntity {
     @Column(nullable = false)
     public LocalDate data;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     public String descricao;
 }

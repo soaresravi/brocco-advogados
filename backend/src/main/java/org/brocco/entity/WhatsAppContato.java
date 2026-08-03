@@ -21,7 +21,7 @@ public class WhatsAppContato extends PanacheEntity {
     @Column(nullable = false)
     public String telefone;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     public String assunto;
 
     @Column(name = "created_at")

@@ -1,0 +1,125 @@
+.ant-layout {
+  font-family: 'Poppins', sans-serif;
+  height: 100vh;
+}
+  
+.ant-menu-dark {
+  background: transparent !important;
+}
+  
+.ant-menu-dark .ant-menu-item, .ant-menu-dark .ant-menu-submenu-title {
+  color: #94a3b8 !important;
+  transition: all 0.3s;
+  border-radius: 8px !important;
+  margin: 4px 8px !important;
+}
+  
+.ant-menu-dark .ant-menu-item:hover, .ant-menu-dark .ant-menu-submenu-title:hover {
+  background: rgba(37, 99, 235, 0.15) !important;
+  color: #ffffff !important;
+}
+  
+.ant-menu-dark .ant-menu-item-selected {
+  background: rgba(37, 99, 235, 0.2) !important;
+  color: #ffffff !important;
+}
+  
+.ant-menu-dark .ant-menu-submenu-selected > .ant-menu-submenu-title {
+  color: #3b82f6 !important;
+}
+  
+.ant-menu-item .anticon, .ant-menu-submenu-title .anticon {
+  font-size: 18px !important;
+}
+  
+.ant-menu-dark .ant-menu-sub {
+  background: transparent !important;
+  border-radius: 12px !important;
+  font-size: 13px;
+  margin: 4px 0 !important;
+}
+  
+.ant-menu-inline-collapsed-tooltip {
+  display: none !important;
+}
+  
+.ant-menu-submenu-popup {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+  
+.ant-menu-submenu-popup .ant-menu {
+  background: linear-gradient(135deg, #0a1628 0%, #0d1239 100%) !important;
+  border-radius: 12px !important;
+  padding: 8px 0 !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3) !important;
+}
+  
+.ant-menu-submenu-popup .ant-menu-item {
+  color: #94a3b8 !important;
+  margin: 4px 8px !important;
+  border-radius: 8px !important;
+  width: calc(100% - 16px) !important;
+}
+  
+.ant-menu-submenu-popup .ant-menu-item .anticon {
+  color: inherit !important;
+}
+
+.ant-layout-header {
+  background: #ffffff !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+  
+@media (max-width: 768px) {
+  
+  .ant-menu-item .anticon, .ant-menu-submenu-title .anticon {
+    font-size: 16px !important;
+  }
+
+}
+
+.ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+  
+.sidebar-scroll-area {
+
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 16px;
+
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255, 255, 255) transparent;
+
+}  
+
+.sidebar-scroll-area::-webkit-scrollbar {
+  width: 4px;
+}
+  
+.sidebar-scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+  
+.sidebar-scroll-area::-webkit-scrollbar-thumb {
+  background: rgba(37, 99, 235, 0.4);
+  border-radius: 4px;
+}
+  
+.sidebar-scroll-area::-webkit-scrollbar-thumb:hover {
+  background: rgba(37, 99, 235, 0.6);
+}
+
+.ant-layout-sider-collapsed .sidebar-scroll-area {
+  overflow-y: hidden !important;
+}
+
+
+.ant-layout-content {
+  overflow-y: auto;
+  height: calc(100vh - 64px); 
+}  

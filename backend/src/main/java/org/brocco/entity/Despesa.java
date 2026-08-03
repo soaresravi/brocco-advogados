@@ -35,7 +35,7 @@ public class Despesa extends PanacheEntity {
     @Column(name = "pago", nullable = false)
     public Boolean pago = false;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     public String detalhes;
 
     @Column(name = "created_at")

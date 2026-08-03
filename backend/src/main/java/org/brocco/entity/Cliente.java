@@ -46,7 +46,7 @@ public class Cliente extends PanacheEntity {
     
     public ReuStatus reuStatus;
 
-    @Column(name = "crimes_acao_penal", columnDefinition = "TEXT")
+    @Column(name = "crimes_acao_penal", columnDefinition = "LONGTEXT")
     public String crimesAcaoPenal;
 
     @Column(name = "como_conheceu")

@@ -21,10 +21,10 @@ public class Notificacao extends PanacheEntity {
     @Enumerated(EnumType.STRING)
     public TipoNotificacao tipo;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     public String titulo;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     public String mensagem;
 
     @Column(name = "lida", nullable = false)
