@@ -1,4 +1,3 @@
-// ===== REGIME PRISIONAL =====
 export const REGIME_PRISIONAL_OPTIONS = [
     { value: 'FECHADO', label: 'Fechado' },
     { value: 'SEMIABERTO', label: 'Semiaberto' },
@@ -8,13 +7,11 @@ export const REGIME_PRISIONAL_OPTIONS = [
     { value: 'AGUARDANDO', label: 'Aguardando' },
 ];
 
-// ===== REU STATUS =====
 export const REU_STATUS_OPTIONS = [
     { value: 'PRIMARIO', label: 'Primário' },
     { value: 'REINCIDENTE', label: 'Reincidente' },
 ];
 
-// ===== COMO CONHECEU =====
 export const COMO_CONHECEU_OPTIONS = [
     { value: 'ANUNCIO', label: 'Anúncio' },
     { value: 'FAMILIA_AMIGO', label: 'É família/Amigo' },
@@ -26,15 +23,12 @@ export const COMO_CONHECEU_OPTIONS = [
     { value: 'SITE', label: 'Site' },
 ];
 
-// ===== SEXO =====
 export const SEXO_OPTIONS = [
     { value: 'MASCULINO', label: 'Masculino' },
     { value: 'FEMININO', label: 'Feminino' },
 ];
 
-// ===== UNIDADES PRISIONAIS (180 unidades - COMPLETO) =====
 export const UNIDADE_PRISIONAL_OPTIONS = [
-    // COMPLEXOS PENAIS - 36
     { value: 'ALVARO_CARVALHO_PENIT_I', label: 'Álvaro de Carvalho - Penit. I "Valentim Alves da Silva" + APP' },
     { value: 'ALVARO_CARVALHO_PENIT_II', label: 'Álvaro de Carvalho - Penit. II' },
     { value: 'BALBINOS_PENIT_I', label: 'Balbinos - Penit. I "Rodrigo dos Santos Freitas" + APP' },
@@ -119,8 +113,6 @@ export const UNIDADE_PRISIONAL_OPTIONS = [
     { value: 'TUPI_PAULISTA_PENIT_FEM', label: 'Tupi Paulista - Penit. Feminina + APP + PC' },
     { value: 'VALPARAISO_PENIT', label: 'Valparaíso - Penit.' },
     { value: 'VALPARAISO_CPP', label: 'Valparaíso - CPP' },
-
-    // PENITENCIÁRIAS - 97
     { value: 'ANDRADINA_PENIT', label: 'Andradina - Penit. "ASP. Anísio Aparecido de Oliveira" + PC' },
     { value: 'ARARAQUARA_PENIT', label: 'Araraquara - Penit. "Dr. Sebastião Martins Silveira" + PRSA + PC' },
     { value: 'ASSIS_PENIT', label: 'Assis - Penit. RSA' },
@@ -167,8 +159,6 @@ export const UNIDADE_PRISIONAL_OPTIONS = [
     { value: 'TAQUARITUBA_PENIT', label: 'Taquarituba - Penit. + APP' },
     { value: 'TREMEBE_PENIT_FEM_I', label: 'Tremembé - Penit. Feminina I "Santa Maria Eufrásia Pelletier" + APP' },
     { value: 'VOTORANTIM_PENIT_FEM', label: 'Votorantim - Penit. Feminina "Oscar Garcia Machado" + APP + PC' },
-
-    // CENTROS DE DETENÇÃO PROVISÓRIA - 42
     { value: 'AGUAI_CDP', label: 'Aguaí - CDP' },
     { value: 'AMERICANA_CDP', label: 'Americana - CDP "AEVP Renato Gonçalves Rodrigues" + APP' },
     { value: 'BAURU_CDP', label: 'Bauru - CDP "ASP Francisco Carlos Caneschi"' },
@@ -189,8 +179,6 @@ export const UNIDADE_PRISIONAL_OPTIONS = [
     { value: 'SAO_PAULO_CDP_VILA_INDEPENDENCIA', label: 'São Paulo - CDP de Vila Independência' },
     { value: 'SUZANO_CDP', label: 'Suzano - CDP + APP' },
     { value: 'TAUBATE_CDP', label: 'Taubaté - CDP "Dr. Félix Nobre de Campos" + PC' },
-
-    // CENTROS DE PROGRESSÃO PENITENCIÁRIA - 16
     { value: 'BAURU_CPP_III', label: 'Bauru - CPP III "Prof. Noé Azevedo"' },
     { value: 'CAMPINAS_CPP', label: 'Campinas - CPP "Prof. Ataliba Nogueira"' },
     { value: 'FRANCO_ROCHA_CPP', label: 'Franco da Rocha - CPP "ASP Moises Marcos Braga"' },
@@ -201,8 +189,6 @@ export const UNIDADE_PRISIONAL_OPTIONS = [
     { value: 'SAO_PAULO_CPP_FEM', label: 'São Paulo - CPP Feminino "Dra. Marina Marigo Cardoso de Oliveira" de Butantan' },
     { value: 'SAO_VICENTE_CPP', label: 'São Vicente - CPP + PC' },
     { value: 'TREMEBE_CPP', label: 'Tremembé - CPP "Dr. Edgard Magalhães Noronha"' },
-
-    // CENTROS DE RESSOCIALIZAÇÃO - 21
     { value: 'ARACATUBA_CR', label: 'Araçatuba - CR + RSA' },
     { value: 'ARARAQUARA_CR', label: 'Araraquara - CR + RSA' },
     { value: 'ARARAQUARA_CR_FEM', label: 'Araraquara - CR Feminino + RSA' },
@@ -220,11 +206,7 @@ export const UNIDADE_PRISIONAL_OPTIONS = [
     { value: 'RIO_CLARO_CR_FEM', label: 'Rio Claro - CR Feminino + RSA' },
     { value: 'RIO_CLARO_CR', label: 'Rio Claro - CR "Dr Luis Gonzaga da Arruda Campos" + RSA' },
     { value: 'SUMARE_CR', label: 'Sumaré - CR RSA + PC' },
-
-    // CENTRO DE READAPTAÇÃO PENITENCIÁRIA - 1
     { value: 'PRESIDENTE_BERNARDES_CRP', label: 'Presidente Bernardes - Centro de Readaptação Penitenciária "Dr. José Ismael Pedrosa" (M e F)' },
-
-    // HOSPITAIS - 4
     { value: 'FRANCO_ROCHA_HCTP_I', label: 'Franco da Rocha - Hospital de Custódia e Tratamento Psiquiátrico I "Professor André Teixeira Lima" (M e F)' },
     { value: 'FRANCO_ROCHA_HCTP_II', label: 'Franco da Rocha - Hospital de Custódia e Tratamento Psiquiátrico II (M)' },
     { value: 'TAUBATE_HCTP', label: 'Taubaté - Hospital de Custódia e Tratamento Psiquiátrico "Dr. Arnaldo Amado Ferreira" + AEP' },

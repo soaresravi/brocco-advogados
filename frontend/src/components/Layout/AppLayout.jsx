@@ -41,7 +41,7 @@ function AppLayout({ children }) {
         
         <Sidebar onCollapseChange={setSidebarCollapsed} isMobile={isMobile} />
         
-        <Layout style={{ marginLeft, transition: 'all 0.2s', background: '#f1f5f9' }}>
+        <Layout style={{ marginLeft, transition: 'margin-left 0.4s cubic-bezier(0.2, 0, 0, 1)', willChange: 'margin-left', background: '#f1f5f9', overflowX: 'hidden' }}>
             
             <Header />
             

@@ -5,6 +5,7 @@ import Login from './pages/Login/Login';
 import AppLayout from './components/Layout/AppLayout';
 import DashboardPrincipal from './pages/DashboardPrincipal';
 import ClienteLista from './pages/Clientes/ClienteLista';
+import ClientesDashboard from './pages/Clientes/ClientesDashboard';
 
 function App() {
   
@@ -75,6 +76,7 @@ function App() {
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<DashboardPrincipal />} />
         <Route path="/clientes/lista" element={<ClienteLista /> } />
+        <Route path="/clientes/dashboard" element={<ClientesDashboard /> } />
       </Routes>
 
     </AppLayout>

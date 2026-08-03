@@ -123,3 +123,20 @@
   overflow-y: auto;
   height: calc(100vh - 64px); 
 }  
+
+.recharts-responsive-container {
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+body, html, #root {
+  overflow-x: hidden;
+}
+
+.ant-col {
+  transition: none !important;
+}
+
+.recharts-wrapper, .recharts-surface {
+  transition: width 0.4s cubic-bezier(0.2, 0, 0, 1) !important;
+  will-change: width;
+}
