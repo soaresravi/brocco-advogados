@@ -6,6 +6,12 @@ import AppLayout from './components/Layout/AppLayout';
 import DashboardPrincipal from './pages/DashboardPrincipal';
 import ClienteLista from './pages/Clientes/ClienteLista';
 import ClientesDashboard from './pages/Clientes/ClientesDashboard';
+import ProcessoLista from './pages/Processos/ProcessoLista';
+import ProcessosDashboard from './pages/Processos/ProcessosDashboard';
+import ProcessosPrazos from './pages/Processos/ProcessosPrazos';
+import AudienciaLista from './pages/Audiencias/AudienciaLista';
+import AudienciasDashboard from './pages/Audiencias/AudienciasDashboard';
+import GoogleCallback from './pages/GoogleCallback';
 
 function App() {
   
@@ -73,10 +79,21 @@ function App() {
     <AppLayout>
       
       <Routes>
+       
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<DashboardPrincipal />} />
+        <Route path="/callback/google" element={<GoogleCallback />} />
+       
         <Route path="/clientes/lista" element={<ClienteLista /> } />
         <Route path="/clientes/dashboard" element={<ClientesDashboard /> } />
+       
+        <Route path="/processos/lista" element={<ProcessoLista /> } />
+        <Route path="/processos/dashboard" element={<ProcessosDashboard /> } />
+        <Route path="/processos/prazos" element={<ProcessosPrazos /> } />
+       
+        <Route path="/audiencias/lista" element={<AudienciaLista /> } />
+        <Route path="/audiencias/dashboard" element={<AudienciasDashboard /> } />
+        
       </Routes>
 
     </AppLayout>

@@ -38,3 +38,5 @@ function GraficoLinha({ data, title, ano, isMobile }) {
     </div>
     );
 }
+
+export default GraficoLinha;

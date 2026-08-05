@@ -5,6 +5,7 @@ import { SearchOutlined, EditOutlined, DeleteOutlined, ReloadOutlined, PlusOutli
 import dayjs from 'dayjs';
 
 import { getClientes, createCliente, updateCliente, deleteCliente } from '../../services/clienteService';
+import { getProcessosOptions } from '../../services/processoService';
 import { REGIME_PRISIONAL_OPTIONS, REU_STATUS_OPTIONS, COMO_CONHECEU_OPTIONS, SEXO_OPTIONS, UNIDADE_PRISIONAL_OPTIONS } from '../../constants/enums';
 
 const { TextArea } = Input;
@@ -22,6 +23,14 @@ function ClienteLista() {
     const [modalLoading, setModalLoading] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
+    const [processosOptions, setProcessosOptions] = useState([]);
+    const [processosLoading, setProcessosLoading] = useState(false);
+
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const isAdmin = user.permissao === 'ADMIN';
+    const isEdit = user.permissao === 'EDIT';
+    const canEdit = isAdmin || isEdit;
+    const isReadOnly = !canEdit;
     
     const [form] = Form.useForm();
 
@@ -36,6 +45,12 @@ function ClienteLista() {
         carregarDados();
     }, [pagination.current, pagination.pageSize, searchText, filtroRegime]);
 
+    useEffect(() => {
+        if (modalVisible) {
+            buscarProcessos('');
+        }
+    }, [modalVisible]);
+
     const showNotification = (type, message) => {
 
         notification[type]({
@@ -48,6 +63,21 @@ function ClienteLista() {
             closable: true,
         });
 
+    };
+
+    const buscarProcessos = async (search = '') => {
+       
+        setProcessosLoading(true);
+       
+        try {
+            const processos = await getProcessosOptions(search);
+            setProcessosOptions(processos);
+        } catch (error) {
+            console.error('Erro ao buscar processos:', error);
+        } finally {
+            setProcessosLoading(false);
+        }
+    
     };
 
     const carregarDados = async () => {
@@ -272,7 +302,7 @@ function ClienteLista() {
                 </Col>
                 
                 <Col xs={24} md={8} style={{ textAlign: isMobile ? 'center' : 'right' }}>
-                    <Button type="primary" onClick={handleAdd} icon={<PlusOutlined />} style={{ background: '#131a53 !important', borderColor: '#131a53 !important', width: isMobile ? '100%' : 'auto', transition: 'all 0.3s ease' }} className="btn-novo-cliente">Novo cliente </Button>
+                    <Button type="primary" onClick={handleAdd} icon={<PlusOutlined />} style={{ background: '#131a53 !important', borderColor: '#131a53 !important', width: isMobile ? '100%' : 'auto', transition: 'all 0.3s ease' }} className="btn-novo-cliente" disabled={isReadOnly}>Novo cliente </Button>
                 </Col>
             
             </Row>
@@ -397,37 +427,47 @@ function ClienteLista() {
 
         </Drawer>
 
-        <Modal title={!editingItem ? 'Novo cliente' : (isEditMode ? 'Editar cliente' : 'Visualizar cliente')} open={modalVisible} onCancel={handleCancelModal} width={isMobile ? '90%' : 700} footer={
+        <Modal title={!editingItem ? 'Novo cliente' : (isEditMode ? 'Editar cliente' : 'Visualizar cliente')} open={modalVisible} onCancel={handleCancelModal} width={isMobile ? '90%' : 700} footer={ !editingItem ? [
+        
+            <Button key="cancel" onClick={handleCancelModal}>Cancelar</Button>,
+            
+            canEdit && (
+                <Button key="submit" type="primary" loading={modalLoading} onClick={handleModalOk} style={{ background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' }}> Salvar </Button>
+            )
+        
+        ].filter(Boolean) : isEditMode ? [
+            
+            <Button key="cancel" onClick={() => {
                 
-            !editingItem ? [
-                <Button key="cancel" onClick={handleCancelModal}>Cancelar</Button>,
-                <Button key="submit" type="primary" loading={modalLoading} onClick={handleModalOk} style={{ background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' }}>Salvar</Button>,
-            ] : isEditMode ? [
-                    
-                <Button key="cancel" onClick={() => {
-                            
-                    setIsEditMode(false);
-                    
-                    if (editingItem) {
-                            
-                        form.setFieldsValue({
-                            ...editingItem,
-                            dataNascimento: editingItem.dataNascimento ? dayjs(editingItem.dataNascimento) : null,
-                            contratantes: editingItem.contratantes?.map(c => ({ ...c, _key: Date.now() + Math.random() })) || [{ _key: Date.now() }]
-                        });
-                            
-                    }
-
-                }}>Cancelar</Button>,
-                    
-                <Button key="submit" type="primary" loading={modalLoading} onClick={handleModalOk} style={{ background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' }}>Salvar</Button>,
+                setIsEditMode(false);
                 
-            ] : [
-                <Button key="edit" type="primary" onClick={handleEnableEdit} style={{ background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' }}> <EditOutlined /> Editar informações </Button>,
-                <Button key="delete" danger onClick={() => { Modal.confirm({ title: 'Excluir cliente', content: 'Tem certeza que deseja excluir este cliente? Esta ação não pode ser desfeita.', okText: 'Sim, excluir', cancelText: 'Não, cancelar', okButtonProps: { style: { background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' }, danger: true }, centered: true, onOk: handleDelete, }); }}> <DeleteOutlined /> Excluir </Button>,
-            ]
+                if (editingItem) {
+                
+                    form.setFieldsValue({
+                        ...editingItem,
+                        dataNascimento: editingItem.dataNascimento ? dayjs(editingItem.dataNascimento) : null,
+                        contratantes: editingItem.contratantes?.map(c => ({ ...c, _key: Date.now() + Math.random() })) || [{ _key: Date.now() }]
+                    });
+                
+                }
+            
+            }}>Cancelar</Button>,
+            
+            canEdit && (
+                <Button key="submit" type="primary" loading={modalLoading} onClick={handleModalOk} style={{ background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' }}> Salvar </Button>
+            )
+        
+        ].filter(Boolean) : [
+            
+            canEdit && (
+                <Button key="edit" type="primary" onClick={handleEnableEdit} style={{ background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' }}> <EditOutlined /> Editar informações </Button>
+            ),
+            
+            canEdit && (
+                <Button key="delete" danger onClick={() => { Modal.confirm({ title: 'Excluir cliente', content: 'Tem certeza que deseja excluir este cliente? Esta ação não pode ser desfeita.', okText: 'Sim, excluir', cancelText: 'Não, cancelar', okButtonProps: { style: { background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' }, danger: true }, centered: true, onOk: handleDelete, }); }}> <DeleteOutlined /> Excluir </Button>
+            )
 
-        } closable={{ mask: false }} style={{ top: 50 }}>
+        ].filter(Boolean)} closable={{ mask: false }} style={{ top: 50 }}>
                 
             <Form form={form} layout="vertical" size="small" disabled={editingItem && !isEditMode}>
                     
@@ -498,9 +538,9 @@ function ClienteLista() {
                     </Col>
                         
                     <Col span={8}>
-                            
+                        
                         <Form.Item name="numeroProcesso" label="Nº do processo" style={{ marginBottom: 8 }}>
-                            <Input size="small" />
+                            <Select size="small" placeholder="Selecione um processo" options={processosOptions.map(p => ({ value: p.numeroProcesso, label: `${p.numeroProcesso} - ${p.clienteNome || 'Sem cliente'}` }))} loading={processosLoading} showSearch={{ filterOption: false, onSearch: buscarProcessos }} onOpenChange={(open) => { if (open && processosOptions.length === 0) buscarProcessos(''); }} allowClear disabled={editingItem && !isEditMode} notFoundContent={processosLoading ? 'Buscando...' : 'Nenhum processo encontrado'} />
                         </Form.Item>
                             
                     </Col>

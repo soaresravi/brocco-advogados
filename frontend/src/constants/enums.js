@@ -23,6 +23,12 @@ export const COMO_CONHECEU_OPTIONS = [
     { value: 'SITE', label: 'Site' },
 ];
 
+export const STATUS_EVENTO_OPTIONS = [
+    { value: 'AGENDADO', label: 'Agendado' },
+    { value: 'CONCLUÍDO', label: 'Concluído' },
+    { value: 'CANCELADO', label: 'Cancelado' },
+];
+
 export const SEXO_OPTIONS = [
     { value: 'MASCULINO', label: 'Masculino' },
     { value: 'FEMININO', label: 'Feminino' },
