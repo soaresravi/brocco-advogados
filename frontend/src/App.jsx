@@ -12,6 +12,10 @@ import ProcessosPrazos from './pages/Processos/ProcessosPrazos';
 import AudienciaLista from './pages/Audiencias/AudienciaLista';
 import AudienciasDashboard from './pages/Audiencias/AudienciasDashboard';
 import GoogleCallback from './pages/GoogleCallback';
+import AtendimentoLista from './pages/Atendimentos/AtendimentoLista';
+import WhatsAppLista from './pages/Atendimentos/WhatsAppLista';
+import AtendimentosDashboard from './pages/Atendimentos/AtendimentosDashboard';
+import ProvidenciasLista from './pages/Atendimentos/ProvidenciasLista';
 
 function App() {
   
@@ -93,6 +97,11 @@ function App() {
        
         <Route path="/audiencias/lista" element={<AudienciaLista /> } />
         <Route path="/audiencias/dashboard" element={<AudienciasDashboard /> } />
+
+        <Route path="/atendimentos/lista" element={<AtendimentoLista /> } />
+        <Route path="/atendimentos/whatsapp" element={<WhatsAppLista /> } />
+        <Route path="/atendimentos/dashboard" element={<AtendimentosDashboard /> } />
+        <Route path="atendimentos/providencias" element={<ProvidenciasLista /> } />
         
       </Routes>
 

@@ -25,7 +25,7 @@ export const COMO_CONHECEU_OPTIONS = [
 
 export const STATUS_EVENTO_OPTIONS = [
     { value: 'AGENDADO', label: 'Agendado' },
-    { value: 'CONCLUÍDO', label: 'Concluído' },
+    { value: 'CONCLUIDO', label: 'Concluído' },
     { value: 'CANCELADO', label: 'Cancelado' },
 ];
 
@@ -217,4 +217,9 @@ export const UNIDADE_PRISIONAL_OPTIONS = [
     { value: 'FRANCO_ROCHA_HCTP_II', label: 'Franco da Rocha - Hospital de Custódia e Tratamento Psiquiátrico II (M)' },
     { value: 'TAUBATE_HCTP', label: 'Taubaté - Hospital de Custódia e Tratamento Psiquiátrico "Dr. Arnaldo Amado Ferreira" + AEP' },
     { value: 'SAO_PAULO_DASH', label: 'São Paulo - Divisão de Ações de Segurança Hospitalar (M e F)' },
+];
+
+export const SIM_NAO_OPTIONS = [
+    { value: 'SIM', label: 'Sim' },
+    { value: 'NAO', label: 'Não' },
 ];
