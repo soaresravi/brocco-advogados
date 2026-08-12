@@ -16,6 +16,8 @@ import AtendimentoLista from './pages/Atendimentos/AtendimentoLista';
 import WhatsAppLista from './pages/Atendimentos/WhatsAppLista';
 import AtendimentosDashboard from './pages/Atendimentos/AtendimentosDashboard';
 import ProvidenciasLista from './pages/Atendimentos/ProvidenciasLista';
+import AndamentosLista from './pages/Andamentos/AndamentosLista';
+import AndamentosDashboard from './pages/Andamentos/AndamentosDashboard';
 
 function App() {
   
@@ -103,6 +105,9 @@ function App() {
         <Route path="/atendimentos/dashboard" element={<AtendimentosDashboard /> } />
         <Route path="atendimentos/providencias" element={<ProvidenciasLista /> } />
         
+        <Route path="/andamentos/lista" element={<AndamentosLista /> } />
+        <Route path="/andamentos/dashboard" element={<AndamentosDashboard /> } />
+
       </Routes>
 
     </AppLayout>

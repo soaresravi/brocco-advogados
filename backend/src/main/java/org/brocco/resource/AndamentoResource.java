@@ -50,6 +50,9 @@ public class AndamentoResource {
     @Inject
     AnexoService anexoService;
 
+    @Inject
+    NotificacaoService notificacaoService;
+
     @Context
     HttpHeaders httpHeaders;
 
@@ -188,7 +191,7 @@ public class AndamentoResource {
     @Transactional
     @RolesAllowed({"ADMIN", "EDIT"})
 
-    public Response atualizarStatusProvidencia(@QueryParam("providenciaId") Long providenciaId, @QueryParam("status") String status) {
+    public Response atualizarStatusProvidencia(@PathParam("providenciaId") Long providenciaId, @QueryParam("status") String status) {
 
         if (!canEdit()) {
             return Response.status(403).entity(new ErroResponse(403, "Proibido", "Você não tem permissão para editar providências", uriInfo.getPath())).build();
@@ -214,6 +217,46 @@ public class AndamentoResource {
             return Response.status(400).entity(new ErroResponse(400, "Erro de validação", "Status inválido. Use: PENDENTE, EM_ANDAMENTO ou CONCLUIDA", uriInfo.getPath())).build();
         }
 
+    }
+
+    @POST
+    @Path("/clientes/{clienteId}/observacoes")
+    @Transactional
+    @RolesAllowed({"ADMIN", "EDIT"})
+
+    public Response salvarObservacao(@PathParam("clienteId") Long clienteId, Map<String, Object> payload) {
+
+        if (!canEdit()) {
+            return Response.status(403).entity(new ErroResponse(403, "Proibido", "Você não tem permissão", uriInfo.getPath())).build();
+        }
+
+        Long adminId = getAdminId();
+        String observacao = (String) payload.get("observacao");
+        Long enviarParaId = payload.get("enviarParaId") != null ? Long.parseLong(payload.get("enviarParaId").toString()) : null;
+
+        if (observacao == null || observacao.trim().isEmpty()) {
+            return Response.status(400).entity(new ErroResponse(400, "Erro", "Observação é obrigatória", uriInfo.getPath())).build();
+        }
+
+        Cliente cliente = Cliente.find("id = ?1 and adminId = ?2", clienteId, adminId).firstResult();
+
+        if (cliente == null) {
+            return Response.status(404).entity(new ErroResponse(404, "Não encontrado", "Cliente não encontrado", uriInfo.getPath())).build();
+        }
+
+        if (enviarParaId != null) {
+
+            User destinatario = User.find("id = ?1 and adminId = ?2", enviarParaId, adminId).firstResult();
+
+            if (destinatario != null) {
+                notificacaoService.criar(enviarParaId, getUserId(), TipoNotificacao.OBSERVACAO, "Nova observação sobre " + cliente.nome, observacao, clienteId, "Cliente", "/andamentos/clientes/" + clienteId);
+            }
+
+        }
+
+        logService.registrar(getUserId(),"CREATE","Observacao",null, "Observação sobre cliente " + cliente.nome + ": " + observacao + (enviarParaId != null ? " (enviado para usuário " + enviarParaId + ")" : ""), getClientIp(), getUserAgent());
+        return Response.ok(Map.of("message", "Observação salva com sucesso", "enviadoPara", enviarParaId != null)).build();
+    
     }
 
     @GET

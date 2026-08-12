@@ -8,7 +8,8 @@ public enum TipoNotificacao {
     PROVIDENCIA("Providência"),
     LAPSO_PROGRESSAO("Lapso de Progressão"),
     PENDENCIA_ADMINISTRATIVA("Pendência Administrativa"),
-    PENDENCIA_FINANCEIRA("Pendência Financeira");
+    PENDENCIA_FINANCEIRA("Pendência Financeira"),
+    OBSERVACAO("Observação");
 
     private String descricao;
 

@@ -223,3 +223,23 @@ export const SIM_NAO_OPTIONS = [
     { value: 'SIM', label: 'Sim' },
     { value: 'NAO', label: 'Não' },
 ];
+
+export const STATUS_PROVIDENCIA_OPTIONS = [
+    { value: 'PENDENTE', label: 'Pendente' },
+    { value: 'EM_ANDAMENTO', label: 'Em andamento' },
+    { value: 'CONCLUIDA', label: 'Concluída' },
+];
+
+export const TIPO_PROVIDENCIA_OPTIONS = [
+    { value: 'HABILITACAO_REVOGACAO', label: 'Habilitação/Revogação' },
+    { value: 'ATESTADOS_TRABALHO', label: 'Atestados de Trabalho' },
+    { value: 'ATESTADOS_ESTUDOS', label: 'Atestados de Estudos' },
+    { value: 'CURSOS', label: 'Cursos' },
+    { value: 'ENCCEJA', label: 'ENCCEJA' },
+    { value: 'ENEM', label: 'ENEM' },
+    { value: 'LEITURA', label: 'Leitura' },
+    { value: 'DETRACAO', label: 'Detração' },
+    { value: 'COMUTACAO', label: 'Comutação' },
+    { value: 'INDULTO', label: 'Indulto' },
+    { value: 'APROXIMACAO_FAMILIAR', label: 'Aproximação familiar' },
+];
