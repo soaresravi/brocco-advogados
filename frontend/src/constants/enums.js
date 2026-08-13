@@ -243,3 +243,16 @@ export const TIPO_PROVIDENCIA_OPTIONS = [
     { value: 'INDULTO', label: 'Indulto' },
     { value: 'APROXIMACAO_FAMILIAR', label: 'Aproximação familiar' },
 ];
+
+export const STATUS_TAREFA_OPTIONS = [
+    { value: 'NAO_INICIADA', label: 'Não iniciada' },
+    { value: 'EM_ANDAMENTO', label: 'Em andamento' },
+    { value: 'CONCLUIDA', label: 'Concluída' },
+];
+
+export const URGENCIA_TAREFA_OPTIONS = [
+    { value: 'EXIGE_ATENCAO_IMEDIATA', label: 'Exige atenção imediata' },
+    { value: 'MUITO_URGENTE', label: 'Muito urgente' },
+    { value: 'REQUER_ATENCAO', label: 'Requer atenção' },
+    { value: 'POUCO_URGENTE', label: 'Pouco urgente' },
+];

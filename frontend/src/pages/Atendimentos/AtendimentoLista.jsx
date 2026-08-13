@@ -227,7 +227,23 @@ function AtendimentoLista() {
             carregarDados();
         
         } catch (error) {
-            showNotification('error', error.response?.data?.message || 'Erro ao salvar atendimento');
+
+            if (error.response?.status === 498 && error.response?.data?.googleTokenExpirado) {
+               
+                Modal.confirm({ title: 'Google Agenda desconectado', content: 'Seu token do Google Agenda expirou. O registro foi salvo, mas não foi sincronizado. Deseja reconectar agora?', okText: 'Sim, reconectar', cancelText: 'Agora não', centered: true, okButtonProps: { style: { background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' } }, onOk: async () => {
+                    const authUrlResponse = await getGoogleAuthUrl();
+                    window.open(authUrlResponse.url, '_blank');
+                }, });
+                
+                setModalVisible(false);
+                setIsEditMode(false);
+                setEditingItem(null);
+                carregarDados();
+            
+            } else {
+                showNotification('error', error.response?.data?.message || 'Erro ao salvar atendimento');
+            }
+        
         } finally {
             setModalLoading(false);
         }

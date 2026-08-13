@@ -167,11 +167,16 @@ public class AudienciaResource {
 
         entity.adminId = adminId;
         updateEntity(entity, request);
-        entity.processoNumero = processo.numeroProcesso;
-        
+        entity.processoNumero = processo.numeroProcesso;   
         entity.persist();
-        sincronizarGoogleCalendar(entity, true);
+
+        boolean googleOk = sincronizarGoogleCalendar(entity, true);
         logService.registrar(getUserId(),"CREATE","Audiência", entity.id, "Criou audiência para processo: " + entity.processoNumero, getClientIp(), getUserAgent());
+        
+        if (!googleOk) {
+            return Response.status(498).entity(Map.of("message", "Token do Google Agenda expirado. Reconecte sua conta.", "googleTokenExpirado", true)).build();
+        }
+        
         return Response.status(Response.Status.CREATED).entity(toResponse(entity)).build();
 
     }
@@ -203,12 +208,17 @@ public class AudienciaResource {
         String processoNumeroAntigo = entity.processoNumero;
         updateEntity(entity, request);
         entity.processoNumero = processo.numeroProcesso;
-
         entity.persist();
-        sincronizarGoogleCalendar(entity, false);
-        logService.registrar(getUserId(),"UPDATE","Audiência", entity.id, "Atualizou audiência: " + processoNumeroAntigo + " -> " + entity.processoNumero, getClientIp(), getUserAgent());
-        return Response.ok(toResponse(entity)).build();
 
+        boolean googleOk = sincronizarGoogleCalendar(entity, false);
+        logService.registrar(getUserId(),"UPDATE","Audiência", entity.id, "Atualizou audiência: " + processoNumeroAntigo + " -> " + entity.processoNumero, getClientIp(), getUserAgent());
+        
+        if (!googleOk) {
+            return Response.status(498).entity(Map.of("message", "Token do Google Agenda expirado. Reconecte sua conta.", "googleTokenExpirado", true)).build();
+        }
+        
+        return Response.ok(toResponse(entity)).build();
+    
     }
 
     @DELETE
@@ -378,14 +388,14 @@ public class AudienciaResource {
         entity.observacoes = request.observacoes;
     }
 
-    private void sincronizarGoogleCalendar(Audiencia entity, boolean isNew) {
+    private boolean sincronizarGoogleCalendar(Audiencia entity, boolean isNew) {
 
         try {
 
             User user = User.findById(getUserId());
 
             if (user.googleRefreshToken == null || user.googleRefreshToken.isEmpty()) {
-                return;
+                return true;
             }
 
             String titulo = "Audiência - " + entity.processoNumero;
@@ -403,8 +413,29 @@ public class AudienciaResource {
                 entity.persist();
             }
 
+            return true;
+
         } catch (Exception e) {
+
             System.err.println("Erro ao sincronizar com Google Calendar: " + e.getMessage());
+
+            if (googleCalendarService.isTokenExpirado(e)) {
+                
+                User user = User.findById(getUserId());
+                
+                if (user != null) {
+                    user.googleRefreshToken = null;
+                    user.googleEmail = null;
+                    user.persist();
+                    System.err.println("Token Google expirado, desconectado automaticamente");
+                }
+                
+                return false;
+            
+            }
+    
+            return true;
+       
         }
 
     }

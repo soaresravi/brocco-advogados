@@ -218,10 +218,15 @@ public class TarefaResource {
         Tarefa entity = new Tarefa();
         entity.adminId = adminId;
         updateEntity(entity, request);
-
         entity.persist();
-        sincronizarGoogleCalendar(entity, true);
+       
+        boolean googleOk = sincronizarGoogleCalendar(entity, true);
         logService.registrar(getUserId(),"CREATE","Tarefa",entity.id, "Criou tarefa: " + (entity.tarefa != null ? entity.tarefa.substring(0, Math.min(50, entity.tarefa.length())) : "sem descrição"), getClientIp(), getUserAgent());
+       
+        if (!googleOk) {
+            return Response.status(498).entity(Map.of("message", "Token do Google Agenda expirado. Reconecte sua conta.","googleTokenExpirado", true)).build();
+        }
+        
         return Response.status(Response.Status.CREATED).entity(toResponse(entity)).build();
 
     }
@@ -246,10 +251,15 @@ public class TarefaResource {
 
         String tarefaAntiga = entity.tarefa;
         updateEntity(entity, request);
-
         entity.persist();
-        sincronizarGoogleCalendar(entity, false);
+      
+        boolean googleOk = sincronizarGoogleCalendar(entity, false);
         logService.registrar(getUserId(),"UPDATE","Tarefa", entity.id, "Atualizou tarefa: " + (tarefaAntiga != null ? tarefaAntiga.substring(0, Math.min(50, tarefaAntiga.length())) : "sem descrição"), getClientIp(), getUserAgent());
+      
+        if (!googleOk) {
+            return Response.status(498).entity(Map.of("message", "Token do Google Agenda expirado. Reconecte sua conta.","googleTokenExpirado", true)).build();
+        }
+        
         return Response.ok(toResponse(entity)).build();
 
     }
@@ -311,6 +321,7 @@ public class TarefaResource {
         response.andamento = entity.andamento;
         response.createdAt = entity.createdAt;
         response.updatedAt = entity.updatedAt;
+        response.googleEventId = entity.googleEventId; 
 
         if (entity.responsavelId != null) {
             User user = User.findById(entity.responsavelId);
@@ -318,6 +329,7 @@ public class TarefaResource {
         }
 
         return response;
+    
     }
 
     private void updateEntity(Tarefa entity, TarefaRequest request) {
@@ -333,40 +345,65 @@ public class TarefaResource {
         entity.andamento = request.andamento;
     }
 
-    private void sincronizarGoogleCalendar(Tarefa entity, boolean isNew) {
-
+    private boolean sincronizarGoogleCalendar(Tarefa entity, boolean isNew) {
+        
         try {
-
+          
             User user = User.findById(getUserId());
-
+    
             if (user.googleRefreshToken == null || user.googleRefreshToken.isEmpty()) {
-                return;
+                return true;
             }
-
+    
             if (entity.prazo == null) {
-                return;
+                return true;
             }
-
+    
             String titulo = "Tarefa: " + (entity.tarefa != null ? entity.tarefa.substring(0, Math.min(30, entity.tarefa.length())) : "Sem título");
-            String descricao = "Tarefa: " + (entity.tarefa != null ? entity.tarefa : "") + "\n" + "Status: " + (entity.status != null ? entity.status.getDescricao() : "Não iniciada") + "\n" + "Urgência: " + (entity.urgencia != null ? entity.urgencia.getDescricao() : "Não definida") + "\n" + "Cliente: " + (entity.clienteNome != null ? entity.clienteNome : "Não informado") + "\n" + "Processo: " + (entity.processoNumero != null ? entity.processoNumero : "Não informado") + "\n" + "Andamento: " + (entity.andamento != null ? entity.andamento : "");
+            String descricao = "Tarefa: " + (entity.tarefa != null ? entity.tarefa : "") + "\nStatus: " + (entity.status != null ? entity.status.getDescricao() : "") + "\nCliente: " + (entity.clienteNome != null ? entity.clienteNome : "") + "\nProcesso: " + (entity.processoNumero != null ? entity.processoNumero : "");
             String horaEvento = "09:00";
-
+        
             Long duracao = 30L;
-            
+    
             if (isNew) {
                 String eventId = googleCalendarService.criarEvento(user.googleRefreshToken, user.googleEmail, titulo, descricao, entity.prazo, horaEvento, duracao);
                 entity.googleEventId = eventId;
                 entity.persist();
             } else if (entity.googleEventId != null) {
-                googleCalendarService.atualizarEvento(user.googleRefreshToken, entity.googleEventId, titulo,descricao, entity.prazo, horaEvento, duracao);
+                googleCalendarService.atualizarEvento(user.googleRefreshToken, entity.googleEventId, titulo, descricao, entity.prazo, horaEvento, duracao);
             } else {
                 String eventId = googleCalendarService.criarEvento(user.googleRefreshToken, user.googleEmail, titulo, descricao, entity.prazo, horaEvento, duracao);
                 entity.googleEventId = eventId;
                 entity.persist();
             }
-
+    
+            return true;
+    
         } catch (Exception e) {
-            System.out.println("Erro ao sincronizar com Google Calendar: " + e.getMessage());
+           
+            System.err.println("Erro ao sincronizar com Google Calendar: " + e.getMessage());
+    
+            if (googleCalendarService.isTokenExpirado(e)) {
+                
+                User user = User.findById(getUserId());
+                
+                if (user != null) {
+                  
+                    user.googleRefreshToken = null;
+                    user.googleEmail = null;
+                    user.persist();
+                  
+                    System.err.println("Token Google expirado, desconectado automaticamente");
+                
+                }
+                
+                return false;
+           
+            }
+    
+            return true;
+       
         }
+
     }
 }

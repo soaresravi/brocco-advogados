@@ -18,6 +18,8 @@ import AtendimentosDashboard from './pages/Atendimentos/AtendimentosDashboard';
 import ProvidenciasLista from './pages/Atendimentos/ProvidenciasLista';
 import AndamentosLista from './pages/Andamentos/AndamentosLista';
 import AndamentosDashboard from './pages/Andamentos/AndamentosDashboard';
+import TarefaLista from './pages/Tarefas/TarefaLista';
+import TarefasDashboard from './pages/Tarefas/TarefasDashboard';
 
 function App() {
   
@@ -107,6 +109,9 @@ function App() {
         
         <Route path="/andamentos/lista" element={<AndamentosLista /> } />
         <Route path="/andamentos/dashboard" element={<AndamentosDashboard /> } />
+     
+        <Route path="/tarefas/lista" element={<TarefaLista /> } />
+        <Route path="/tarefas/dashboard" element={<TarefasDashboard /> } />
 
       </Routes>
 

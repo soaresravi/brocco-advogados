@@ -139,4 +139,8 @@ public class GoogleCalendarService {
         Calendar service = new Calendar.Builder(new NetHttpTransport(), JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
         service.events().delete("primary", eventId).execute();
     }
+
+    public boolean isTokenExpirado(Exception e) {
+        return e.getMessage() != null && e.getMessage().contains("invalid_grant");
+    }
 }

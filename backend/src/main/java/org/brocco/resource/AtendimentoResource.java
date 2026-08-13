@@ -175,14 +175,20 @@ public class AtendimentoResource {
 
         Long adminId = getAdminId();
         Atendimento entity = new Atendimento();
+       
         entity.adminId = adminId;
         updateEntity(entity, request);
-
         entity.persist();
-        sincronizarGoogleCalendar(entity, true);
+        
+        boolean googleOk = sincronizarGoogleCalendar(entity, true);
         logService.registrar(getUserId(),"CREATE","Atendimento", entity.id, "Criou atendimento para: " + entity.nome, getClientIp(), getUserAgent());
+        
+        if (!googleOk) {
+            return Response.status(498).entity(Map.of("message", "Token do Google Agenda expirado. Reconecte sua conta.", "googleTokenExpirado", true)).build();
+        }
+        
         return Response.status(Response.Status.CREATED).entity(toResponse(entity)).build();
-
+    
     }
 
     @PUT
@@ -205,10 +211,15 @@ public class AtendimentoResource {
 
         String nomeAntigo = entity.nome;
         updateEntity(entity, request);
-        
         entity.persist();
-        sincronizarGoogleCalendar(entity, false);
+        
+        boolean googleOk = sincronizarGoogleCalendar(entity, false);
         logService.registrar(getUserId(),"UPDATE","Atendimento", entity.id, "Atualizou atendimento: " + nomeAntigo + " -> " + entity.nome, getClientIp(), getUserAgent());
+        
+        if (!googleOk) {
+            return Response.status(498).entity(Map.of("message", "Token do Google Agenda expirado. Reconecte sua conta.", "googleTokenExpirado", true)).build();
+        }
+        
         return Response.ok(toResponse(entity)).build();
 
     }
@@ -380,14 +391,14 @@ public class AtendimentoResource {
         entity.observacoes = request.observacoes;
     }
 
-    private void sincronizarGoogleCalendar(Atendimento entity, boolean isNew) {
+    private boolean sincronizarGoogleCalendar(Atendimento entity, boolean isNew) {
 
         try {
 
             User user = User.findById(getUserId());
 
             if (user.googleRefreshToken == null || user.googleRefreshToken.isEmpty()) {
-                return;
+                return true;
             }
 
             String titulo = "Atendimento - " + entity.nome;
@@ -405,8 +416,29 @@ public class AtendimentoResource {
                 entity.persist();
             }
 
+            return true;
+
         } catch (Exception e) {
+           
             System.err.println("Erro ao sincronizar com Google Calendar: " + e.getMessage());
+
+            if (googleCalendarService.isTokenExpirado(e)) {
+               
+                User user = User.findById(getUserId());
+               
+                if (user != null) {
+                    user.googleRefreshToken = null;
+                    user.googleEmail = null;
+                    user.persist();
+                    System.err.println("Token Google expirado, desconectado automaticamente");
+                }
+               
+                return false;
+            
+            }
+    
+            return true;
+
         }
 
     }
