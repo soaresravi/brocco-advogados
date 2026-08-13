@@ -108,9 +108,10 @@ public class DespesaResource {
         }
 
         if (search != null && !search.isEmpty()) {
-            query.append(" and (lower(despesa) like").append(params.size() + 1);
+            query.append(" and (lower(despesa) like ?").append(params.size() + 1);
             params.add("%" + search.toLowerCase() + "%");
             query.append(" or lower(detalhes) like ?").append(params.size() + 1);
+            params.add("%" + search.toLowerCase() + "%");
             query.append(")");
         }
 

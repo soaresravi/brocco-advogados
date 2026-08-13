@@ -256,3 +256,34 @@ export const URGENCIA_TAREFA_OPTIONS = [
     { value: 'REQUER_ATENCAO', label: 'Requer atenção' },
     { value: 'POUCO_URGENTE', label: 'Pouco urgente' },
 ];
+
+export const TIPO_RECEBIMENTO_OPTIONS = [
+    { value: 'COMISSAO', label: 'Comissão' },
+    { value: 'CONSULTA', label: 'Consulta' },
+    { value: 'ENTRADA', label: 'Entrada' },
+    { value: 'HONORARIOS', label: 'Honorários' },
+    { value: 'MENSALIDADE', label: 'Mensalidade' },
+    { value: 'MULTA', label: 'Multa' },
+    { value: 'OUTROS', label: 'Outros' },
+];
+
+export const CATEGORIA_DESPESA_OPTIONS = [
+    { value: 'AGUA', label: 'Água' },
+    { value: 'ALIMENTACAO', label: 'Alimentação' },
+    { value: 'ALUGUEL', label: 'Aluguel' },
+    { value: 'CELULAR', label: 'Celular' },
+    { value: 'COMPRAS', label: 'Compras' },
+    { value: 'GAS', label: 'Gás' },
+    { value: 'INTERNET', label: 'Internet' },
+    { value: 'INVESTIMENTO', label: 'Investimento' },
+    { value: 'LIMPEZA', label: 'Limpeza' },
+    { value: 'LUZ', label: 'Luz' },
+    { value: 'MANUTENCAO', label: 'Manutenção' },
+    { value: 'MATERIAIS', label: 'Materiais' },
+    { value: 'MERCADO', label: 'Mercado' },
+    { value: 'OUTRAS', label: 'Outras' },
+    { value: 'OUTRAS_DESPESAS_FUNCIONARIO', label: 'Outras despesas com funcionário' },
+    { value: 'PUBLICIDADE', label: 'Publicidade' },
+    { value: 'SALARIO_FUNCIONARIO', label: 'Salário de funcionário' },
+    { value: 'TRANSPORTE', label: 'Transporte' },
+];

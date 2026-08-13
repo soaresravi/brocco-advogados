@@ -260,11 +260,16 @@ function TarefaLista() {
                 return;
             }
 
+            const clienteSelecionado = clientesOptions.find(c => c.value === values.clienteId);
+            const processoSelecionado = processosOptions.find(p => p.value === values.processoId);
+
             const dataToSend = {
                 ...values,
                 status: values.status,
                 urgencia: values.urgencia,
                 prazo: values.prazo ? values.prazo.format('YYYY-MM-DD') : null,
+                clienteNome: clienteSelecionado?.label || null,
+                processoNumero: processoSelecionado ? processoSelecionado.label.split(' - ')[0] : null,
             };
 
             if (editingItem) {

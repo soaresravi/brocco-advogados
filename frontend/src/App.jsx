@@ -20,6 +20,9 @@ import AndamentosLista from './pages/Andamentos/AndamentosLista';
 import AndamentosDashboard from './pages/Andamentos/AndamentosDashboard';
 import TarefaLista from './pages/Tarefas/TarefaLista';
 import TarefasDashboard from './pages/Tarefas/TarefasDashboard';
+import FinanceiroDashboard from './pages/Financeiro/FinanceiroDashboard';
+import RecebimentoLista from './pages/Financeiro/RecebimentoLista';
+import DespesaLista from './pages/Financeiro/DespesaLista';
 
 function App() {
   
@@ -88,7 +91,7 @@ function App() {
       
       <Routes>
        
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<Navigate to="/dashboard" />} /> 
         <Route path="/dashboard" element={<DashboardPrincipal />} />
         <Route path="/callback/google" element={<GoogleCallback />} />
        
@@ -112,6 +115,10 @@ function App() {
      
         <Route path="/tarefas/lista" element={<TarefaLista /> } />
         <Route path="/tarefas/dashboard" element={<TarefasDashboard /> } />
+
+        <Route path="/financeiro/dashboard" element={<FinanceiroDashboard /> } />
+        <Route path="/financeiro/recebimentos" element={<RecebimentoLista /> } />
+        <Route path="/financeiro/despesas" element={<DespesaLista /> } />
 
       </Routes>
 
