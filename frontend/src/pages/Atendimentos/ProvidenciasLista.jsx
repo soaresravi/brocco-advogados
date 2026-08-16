@@ -330,7 +330,7 @@ function ProvidenciasLista() {
                 
                     <Drawer title={<span style={{ color: '#1a3a5c' }}>Filtros</span>} placement="bottom" onClose={() => setFiltersDrawerOpen(false)} open={filtersDrawerOpen} size="auto">
             
-                        <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                        <Space orientation="vertical" style={{ width: '100%' }} size="middle">
                             <Select placeholder="Status" allowClear style={{ width: '100%' }} value={filtroStatus} onChange={handleStatusChange} options={STATUS_PROVIDENCIA_OPTIONS} />
                             <Button onClick={() => { handleReset(); setFiltersDrawerOpen(false); }} style={{ width: '100%' }}> Limpar filtros </Button>
                             <Button type="primary" onClick={() => setFiltersDrawerOpen(false)} style={{ background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)', width: '100%' }}> Aplicar filtros </Button>
@@ -470,7 +470,7 @@ function ProvidenciasLista() {
                         <div style={{ marginBottom: 16, padding: 8, background: '#f1f5f9', borderRadius: 6 }}>
                             <Typography.Text strong>Cliente: </Typography.Text>
                             <Typography.Text>{editingItem.clienteNome}</Typography.Text>
-                            <Form.Item name="clienteId" hidden> <Input /> </Form.Item>
+                            <Form.Item name="clienteId" hidden><Input /></Form.Item>
                         </div>
                     
                     )}

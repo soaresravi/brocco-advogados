@@ -342,7 +342,7 @@ function RecebimentoLista() {
                 
                     <Drawer title={<span style={{ color: '#1a3a5c' }}>Filtros</span>} placement="bottom" onClose={() => setFiltersDrawerOpen(false)} open={filtersDrawerOpen} size="auto">
             
-                        <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                        <Space orientation="vertical" style={{ width: '100%' }} size="middle">
                             <Select placeholder="Tipo" allowClear style={{ width: '100%' }} value={filtroTipo} onChange={(value) => { setFiltroTipo(value); setPagination((prev) => ({ ...prev, current: 1 })); }} options={TIPO_RECEBIMENTO_OPTIONS} />
                             <Select placeholder="Recebido?" allowClear style={{ width: '100%' }} value={filtroRecebido} onChange={(value) => { setFiltroRecebido(value); setPagination((prev) => ({ ...prev, current: 1 })); }} options={SIM_NAO_OPTIONS} />
                             <DatePicker placeholder="Data do início" format="DD/MM/YYYY" onChange={(value) => { setFiltroDataInicio(value); setPagination((prev) => ({ ...prev, current: 1 })); }} size="small" style={{ width: '100%' }} />

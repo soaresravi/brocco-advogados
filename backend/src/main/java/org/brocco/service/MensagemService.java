@@ -28,7 +28,7 @@ public class MensagemService {
     }
 
     public List<Mensagem> listarConversa(Long usuarioId1, Long usuarioId2, int page, int size) {
-        return Mensagem.find("(remetenteId = ?1 and destinatarioId = ?2) or (remetenteId = ?2 and destinatarioId = ?1) " + "order by createdAt desc", usuarioId1, usuarioId2).page(page, size).list();
+        return Mensagem.find("(remetenteId = ?1 and destinatarioId = ?2) or (remetenteId = ?2 and destinatarioId = ?1) " + "order by createdAt asc", usuarioId1, usuarioId2).page(page, size).list();
     }
 
     public long contarNaoLidas(Long usuarioId, Long remetenteId) {

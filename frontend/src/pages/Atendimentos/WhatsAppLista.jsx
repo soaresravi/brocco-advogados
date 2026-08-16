@@ -188,6 +188,16 @@ function WhatsAppLista() {
 
     };
 
+    const handleDataInicioChange = (value) => {
+        setFiltroDataInicio(value);
+        setPagination((prev) => ({ ...prev, current: 1 }));
+    };
+
+    const handleDataFimChange = (value) => {
+        setFiltroDataFim(value);
+        setPagination((prev) => ({ ...prev, current: 1 }));
+    };
+
     const columns = [
        
         { title: 'ID', dataIndex: 'id', width: 60 },
@@ -247,7 +257,7 @@ function WhatsAppLista() {
                 
                     <Drawer title={<span style={{ color: '#1a3a5c' }}>Filtros</span>} placement="bottom" onClose={() => setFiltersDrawerOpen(false)} open={filtersDrawerOpen} size="auto">
                         
-                        <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                        <Space orientation="vertical" style={{ width: '100%' }} size="middle">
                             <DatePicker placeholder="Data do início" format="DD/MM/YYYY" onChange={handleDataInicioChange} size="small" style={{ width: '100%' }} />
                             <DatePicker placeholder="Data do fim" format="DD/MM/YYYY" onChange={handleDataFimChange} size="small" style={{ width: '100%' }} />
                             <Button onClick={() => { handleReset(); setFiltersDrawerOpen(false); }} style={{ width: '100%' }}> Limpar filtros </Button>

@@ -26,35 +26,44 @@ public class ChatWebSocket {
 
     @OnMessage
     public void onMessage(String message, Session session, @PathParam("userId") Long remetenteId) {
-
+   
         try {
-
+            
             com.google.gson.JsonObject json = com.google.gson.JsonParser.parseString(message).getAsJsonObject();
-
+    
             Long destinatarioId = json.get("destinatarioId").getAsLong();
             String conteudo = json.get("conteudo").getAsString();
-            Mensagem mensagem = mensagemService.salvar(remetenteId, destinatarioId, conteudo);
+            
+            boolean notifyOnly = json.has("notifyOnly") && json.get("notifyOnly").getAsBoolean();
+            Mensagem mensagem;
+           
+            if (notifyOnly) {
+                mensagem = new Mensagem();
+                mensagem.remetenteId = remetenteId;
+                mensagem.destinatarioId = destinatarioId;
+                mensagem.conteudo = conteudo;
+                mensagem.createdAt = java.time.LocalDateTime.now();
+            } else {
+                mensagem = mensagemService.salvar(remetenteId, destinatarioId, conteudo);
+            }
+    
             Session destSession = sessions.get(destinatarioId);
-
+          
             if (destSession != null && destSession.isOpen()) {
-
                 com.google.gson.JsonObject response = new com.google.gson.JsonObject();
-
-                response.addProperty("id", mensagem.id);
+                response.addProperty("id", mensagem.id != null ? mensagem.id : 0);
                 response.addProperty("remetenteId", remetenteId);
                 response.addProperty("conteudo", conteudo);
                 response.addProperty("createdAt", mensagem.createdAt.toString());
-
                 destSession.getBasicRemote().sendText(response.toString());
-
             }
-
+    
         } catch (Exception e) {
             System.err.println("Erro ao processar mensagem: " + e.getMessage());
         }
 
     }
-
+    
     @OnClose
     public void onClose(Session session, @PathParam("userId") Long userId) {
         sessions.remove(userId);

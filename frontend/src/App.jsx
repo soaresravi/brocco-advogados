@@ -23,6 +23,7 @@ import TarefasDashboard from './pages/Tarefas/TarefasDashboard';
 import FinanceiroDashboard from './pages/Financeiro/FinanceiroDashboard';
 import RecebimentoLista from './pages/Financeiro/RecebimentoLista';
 import DespesaLista from './pages/Financeiro/DespesaLista';
+import NotificacoesChat from './pages/NotificacoesChat';
 
 function App() {
   
@@ -91,7 +92,9 @@ function App() {
       
       <Routes>
        
-        <Route path="/" element={<Navigate to="/dashboard" />} /> 
+        <Route path="/" element={<Navigate to="/dashboard" replace />} /> 
+        <Route path="/login" element={<Navigate to="/dashboard" replace />} />
+        
         <Route path="/dashboard" element={<DashboardPrincipal />} />
         <Route path="/callback/google" element={<GoogleCallback />} />
        
@@ -119,6 +122,8 @@ function App() {
         <Route path="/financeiro/dashboard" element={<FinanceiroDashboard /> } />
         <Route path="/financeiro/recebimentos" element={<RecebimentoLista /> } />
         <Route path="/financeiro/despesas" element={<DespesaLista /> } />
+
+        <Route path="/notificacoes" element={<NotificacoesChat />} />
 
       </Routes>
 

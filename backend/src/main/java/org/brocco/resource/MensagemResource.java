@@ -79,25 +79,35 @@ public class MensagemResource {
     public Response listarConversas() {
         
         Long userId = getUserId();
-        List<Long> usuariosIds = Mensagem.find("select distinct case when remetenteId = ?1 then destinatarioId else remetenteId end " + "from Mensagem where remetenteId = ?1 or destinatarioId = ?1", userId).project(Long.class).list();
+        Long adminId = getAdminId();
 
-        List<ConversaResponse> conversas = usuariosIds.stream().map(id -> {
+        List<User> todosUsuarios = User.find("adminId = ?1 or (id = ?1 and adminId is null)", adminId).list();
+
+        List<ConversaResponse> conversas = todosUsuarios.stream().filter(u -> !u.id.equals(userId)).map(u -> {
 
             ConversaResponse response = new ConversaResponse();
-
-            response.usuarioId = id;
-            response.usuarioNome = getNomeUsuario(id);
-
-            Mensagem ultima = Mensagem.find("(remetenteId = ?1 and destinatarioId = ?2) or (remetenteId = ?2 and destinatarioId = ?1) " + "order by createdAt desc", userId, id).firstResult();
-
+           
+            response.usuarioId = u.id;
+            response.usuarioNome = u.nome;
+            
+            Mensagem ultima = Mensagem.find("(remetenteId = ?1 and destinatarioId = ?2) or (remetenteId = ?2 and destinatarioId = ?1) order by createdAt desc", userId, u.id).firstResult();
+            
             if (ultima != null) {
                 response.ultimaMensagem = ultima.conteudo;
                 response.ultimaData = ultima.createdAt;
+            } else {
+                response.ultimaMensagem = "Nenhuma mensagem ainda";
+                response.ultimaData = null;
             }
-
-            response.naoLidas = mensagemService.contarNaoLidas(userId, id);
+            
+            response.naoLidas = mensagemService.contarNaoLidas(userId, u.id);
             return response;
 
+        }).sorted((a, b) -> {
+            if (a.ultimaData == null && b.ultimaData == null) return 0;
+            if (a.ultimaData == null) return 1;
+            if (b.ultimaData == null) return -1;
+            return b.ultimaData.compareTo(a.ultimaData);
         }).collect(Collectors.toList());
 
         return Response.ok(conversas).build();
@@ -107,7 +117,7 @@ public class MensagemResource {
     @GET
     @Path("/conversa/{usuarioId}")
 
-    public Response listarConversa(@QueryParam("usuarioId") Long outroUsuarioId, @QueryParam("page") @DefaultValue("0") int page, @QueryParam("size") @DefaultValue("50") int size) {
+    public Response listarConversa(@PathParam("usuarioId") Long outroUsuarioId, @QueryParam("page") @DefaultValue("0") int page, @QueryParam("size") @DefaultValue("50") int size) {
 
         Long userId = getUserId();
         mensagemService.marcarComoLidas(userId, outroUsuarioId);

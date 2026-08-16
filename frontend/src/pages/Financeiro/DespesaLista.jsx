@@ -312,7 +312,7 @@ function DespesaLista() {
                 
                     <Drawer title={<span style={{ color: '#1a3a5c' }}>Filtros</span>} placement="bottom" onClose={() => setFiltersDrawerOpen(false)} open={filtersDrawerOpen} size="auto">
             
-                        <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                        <Space orientation="vertical" style={{ width: '100%' }} size="middle">
                             <Select placeholder="Categoria" allowClear style={{ width: '100%' }} value={filtroCategoria} onChange={(value) => { setFiltroCategoria(value); setPagination((prev) => ({ ...prev, current: 1 })); }} options={CATEGORIA_DESPESA_OPTIONS} />
                             <Select placeholder="Pago?" allowClear style={{ width: '100%' }} value={filtroPago} onChange={(value) => { setFiltroPago(value); setPagination((prev) => ({ ...prev, current: 1 })); }} options={SIM_NAO_OPTIONS} />
                             <DatePicker placeholder="Data do início" format="DD/MM/YYYY" onChange={(value) => { setFiltroDataInicio(value); setPagination((prev) => ({ ...prev, current: 1 })); }} size="small" style={{ width: '100%' }} />
