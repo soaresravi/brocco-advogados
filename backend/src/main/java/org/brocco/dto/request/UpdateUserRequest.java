@@ -12,9 +12,7 @@ public class UpdateUserRequest {
 
     public String email;
 
-    @NotBlank(message = "Senha é obrigatória")
     @Size(min = 6, message = "Senha deve ter pelo menos 6 caracteres")
-    
     public String senha;
 
     @NotNull(message = "Permissão é obrigatória")

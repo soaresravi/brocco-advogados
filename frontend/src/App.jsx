@@ -24,6 +24,7 @@ import FinanceiroDashboard from './pages/Financeiro/FinanceiroDashboard';
 import RecebimentoLista from './pages/Financeiro/RecebimentoLista';
 import DespesaLista from './pages/Financeiro/DespesaLista';
 import NotificacoesChat from './pages/NotificacoesChat';
+import Configuracoes from './pages/Configuracoes';
 
 function App() {
   
@@ -124,6 +125,7 @@ function App() {
         <Route path="/financeiro/despesas" element={<DespesaLista /> } />
 
         <Route path="/notificacoes" element={<NotificacoesChat />} />
+        <Route path="/configuracoes" element={<Configuracoes /> } />
 
       </Routes>
 

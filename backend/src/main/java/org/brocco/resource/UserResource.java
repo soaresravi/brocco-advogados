@@ -180,7 +180,7 @@ public class UserResource {
 
         }
 
-        if (request.senha != null && !request.senha.isEmpty()) {
+        if (request.senha != null && !request.senha.trim().isEmpty()) {
             user.senha = hashService.gerarHash(request.senha);
         }
 
@@ -199,6 +199,7 @@ public class UserResource {
             } catch (IllegalArgumentException e) {
                 return Response.status(400).entity(new ErroResponse(400, "Erro de validação", "Permissão inválida. Use: EDIT ou READ", uriInfo.getPath())).build();
             }
+
         }
 
         user.persist();
@@ -230,6 +231,7 @@ public class UserResource {
         user.delete();
         logService.registrar(getUserId(),"DELETE","Usuário", id, "Deletou usuário: " + nome + " (" + email + ")", getClientIp(), getUserAgent());
         return Response.noContent().build();
+   
     }
 
     @GET
