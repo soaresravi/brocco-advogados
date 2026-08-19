@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Result, Button, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
-function GoogleCallback() {
+function MicrosoftCallback() {
 
     const navigate = useNavigate();
 
@@ -20,11 +20,11 @@ function GoogleCallback() {
     useEffect(() => {
 
         const urlParams = new URLSearchParams(window.location.search);
-        const googleStatus = urlParams.get('google');
+        const msStatus = urlParams.get('success') ? 'success' : urlParams.get('error') ? 'error' : null;
 
-        if (googleStatus === 'success') {
+        if (msStatus === 'success') {
             setStatus('success');
-        } else if (googleStatus === 'error') {
+        } else if (msStatus === 'error') {
             setStatus('error');
         }
 
@@ -57,7 +57,7 @@ function GoogleCallback() {
         
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', padding: isMobile ? 16 : 0 }}>
             
-            <Result status="success" title="Permissão concedida!" subTitle="Sua conta do Google foi conectada com sucesso. Agora você pode fechar esta janela." extra={[
+            <Result status="success" title="Permissão concedida!" subTitle="Sua conta do Outlook foi conectada com sucesso. Agora você pode fechar esta janela." extra={[
                 <Button type="primary" key="close" onClick={() => window.close()} style={{ background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' }}> Fechar esta janela </Button>,
             ]} />
         
@@ -70,7 +70,7 @@ function GoogleCallback() {
     
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', padding: isMobile ? 16 : 0 }}>
        
-        <Result status="error" title="Erro na conexão" subTitle="Ocorreu um erro ao conectar sua conta do Google. Tente novamente." extra={[
+        <Result status="error" title="Erro na conexão" subTitle="Ocorreu um erro ao conectar sua conta do Outlook. Tente novamente." extra={[
             <Button type="primary" key="close" onClick={() => window.close()} style={{ background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' }}> Fechar </Button>,
         ]} />
         
@@ -79,4 +79,4 @@ function GoogleCallback() {
 
 }
 
-export default GoogleCallback;
+export default MicrosoftCallback;

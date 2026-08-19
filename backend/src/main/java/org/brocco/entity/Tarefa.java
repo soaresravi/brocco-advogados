@@ -13,8 +13,8 @@ public class Tarefa extends PanacheEntity {
     @Column(name = "admin_id", nullable = false)
     public Long adminId;
 
-    @Column(name = "google_event_id")
-    public String googleEventId;
+    @Column(name = "microsoft_event_id")
+    public String microsoftEventId;
 
     @Column(columnDefinition = "LONGTEXT")
     public String tarefa;

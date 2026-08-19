@@ -15,16 +15,16 @@ export const alterarSenha = async (data) => {
     return response.data;
 };
 
-export const getGoogleStatus = async () => {
-    const response = await api.get('/auth/google/status');
+export const getMicrosoftStatus = async () => {
+    const response = await api.get('/auth/microsoft/status');
     return response.data;
 };
 
-export const disconnectGoogle = async () => {
-    await api.delete('/auth/google/disconnect');
+export const getMicrosoftAuthUrl = async () => {
+    const response = await api.get('/auth/microsoft/auth-url');
+    return response.data;
 };
 
-export const getAuthUrl = async () => {
-    const response = await api.get('/auth/google/auth-url');
-    return response.data;
+export const disconnectMicrosoft = async () => {
+    await api.delete('/auth/microsoft/disconnect');
 };

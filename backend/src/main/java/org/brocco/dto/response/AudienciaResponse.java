@@ -13,6 +13,6 @@ public class AudienciaResponse {
     public Long processoId;
     public String processoNumero, detalhes, local, observacoes;
     public Long diasAteEvento;
-    public String googleEventId;
+    public String microsoftEventId;
     public LocalDateTime createdAt, updatedAt;
 }

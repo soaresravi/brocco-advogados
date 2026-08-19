@@ -11,7 +11,7 @@ import ProcessosDashboard from './pages/Processos/ProcessosDashboard';
 import ProcessosPrazos from './pages/Processos/ProcessosPrazos';
 import AudienciaLista from './pages/Audiencias/AudienciaLista';
 import AudienciasDashboard from './pages/Audiencias/AudienciasDashboard';
-import GoogleCallback from './pages/GoogleCallback';
+import MicrosoftCallback from './pages/MicrosoftCallback';
 import AtendimentoLista from './pages/Atendimentos/AtendimentoLista';
 import WhatsAppLista from './pages/Atendimentos/WhatsAppLista';
 import AtendimentosDashboard from './pages/Atendimentos/AtendimentosDashboard';
@@ -97,7 +97,7 @@ function App() {
         <Route path="/login" element={<Navigate to="/dashboard" replace />} />
         
         <Route path="/dashboard" element={<DashboardPrincipal />} />
-        <Route path="/callback/google" element={<GoogleCallback />} />
+        <Route path="/callback/microsoft" element={<MicrosoftCallback />} />
        
         <Route path="/clientes/lista" element={<ClienteLista /> } />
         <Route path="/clientes/dashboard" element={<ClientesDashboard /> } />

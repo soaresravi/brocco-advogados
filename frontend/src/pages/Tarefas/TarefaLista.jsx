@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Table, Input, Button, Space, Modal, Form, Select, Row, Col, Card, DatePicker, notification, Tooltip, Drawer, Typography, Tag } from 'antd';
-import { SearchOutlined, EditOutlined, DeleteOutlined, ReloadOutlined, PlusOutlined, MoreOutlined, GoogleOutlined } from '@ant-design/icons';
+import { SearchOutlined, EditOutlined, DeleteOutlined, ReloadOutlined, PlusOutlined, MoreOutlined, WindowsOutlined } from '@ant-design/icons';
 
 import dayjs from 'dayjs';
 
-import { getTarefas, createTarefa, updateTarefa, deleteTarefa, getProcessosOptions, getClientesOptions, getUsuariosSimples, getGoogleStatus, getGoogleAuthUrl } from '../../services/tarefaService';
+import { getTarefas, createTarefa, updateTarefa, deleteTarefa, getProcessosOptions, getClientesOptions, getUsuariosSimples, getMicrosoftStatus, getMicrosoftAuthUrl } from '../../services/tarefaService';
 import { STATUS_TAREFA_OPTIONS, URGENCIA_TAREFA_OPTIONS } from '../../constants/enums';
 
 const { TextArea } = Input;
@@ -219,16 +219,16 @@ function TarefaLista() {
 
     };
 
-    const verificarGoogle = async () => {
+    const verificarMicrosoft = async () => {
 
         try {
 
-            const googleStatus = await getGoogleStatus();
+            const microsoftStatus = await getMicrosoftStatus();
 
-            if (!googleStatus.connected) {
+            if (!microsoftStatus.connected) {
 
-                Modal.confirm({ title: 'Google Agenda não conectado', content: 'Para sincronizar as tarefas com sua agenda, você precisa conectar sua conta do Google. Deseja conectar agora?', okText: 'Sim, conectar', cancelText: 'Cancelar', centered: true, okButtonProps: { style: { background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' } }, onOk: async () => {
-                    const authUrlResponse = await getGoogleAuthUrl();
+                Modal.confirm({ title: 'Microsoft Outlook não conectado', content: 'Para sincronizar as tarefas com sua agenda, você precisa conectar sua conta do Outlook. Deseja conectar agora?', okText: 'Sim, conectar', cancelText: 'Cancelar', centered: true, okButtonProps: { style: { background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' } }, onOk: async () => {
+                    const authUrlResponse = await getMicrosoftStatus();
                     window.open(authUrlResponse.url, '_blank');
                     showNotification('info', 'Após conectar, clique novamente em Salvar');
                 }, });
@@ -240,7 +240,7 @@ function TarefaLista() {
             return true;
             
         } catch (error) {
-            showNotification('error', 'Erro ao verificar conexão com Google');
+            showNotification('error', 'Erro ao verificar conexão com Outlook');
             return false;
         }
 
@@ -253,9 +253,9 @@ function TarefaLista() {
             const values = await form.validateFields();
             setModalLoading(true);
 
-            const googleOk = await verificarGoogle();
+            const microsoftOk = await verificarMicrosoft();
 
-            if (!googleOk) {
+            if (!microsoftOk) {
                 setModalLoading(false);
                 return;
             }
@@ -274,10 +274,10 @@ function TarefaLista() {
 
             if (editingItem) {
                 await updateTarefa(editingItem.id, dataToSend);
-                showNotification('success', 'Tarefa atualizada e sincronizada com Google Agenda!');
+                showNotification('success', 'Tarefa atualizada e sincronizada com Microsoft Outlook!');
             } else {
                 await createTarefa(dataToSend);
-                showNotification('success', 'Tarefa criada e sincronizada com Google Agenda!');
+                showNotification('success', 'Tarefa criada e sincronizada com Microsoft Outlook!');
             }
 
             setModalVisible(false);
@@ -287,10 +287,10 @@ function TarefaLista() {
 
         } catch (error) {
 
-            if (error.response?.status === 401 && error.response?.data?.googleTokenExpirado) {
+            if (error.response?.status === 401 && error.response?.data?.microsoftTokenExpirado) {
             
-                Modal.confirm({ title: 'Google Agenda desconectado', content: 'Seu token do Google Agenda expirou. O registro foi salvo, mas não foi sincronizado. Deseja reconectar agora?', okText: 'Sim, reconectar', cancelText: 'Agora não', centered: true, okButtonProps: { style: { background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' } }, onOk: async () => {
-                    const authUrlResponse = await getGoogleAuthUrl();
+                Modal.confirm({ title: 'Microsoft Token desconectado', content: 'Seu token do Microsoft Outlook expirou. O registro foi salvo, mas não foi sincronizado. Deseja reconectar agora?', okText: 'Sim, reconectar', cancelText: 'Agora não', centered: true, okButtonProps: { style: { background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' } }, onOk: async () => {
+                    const authUrlResponse = await getMicrosoftAuthUrl();
                     window.open(authUrlResponse.url, '_blank');
                 }, });
 
@@ -353,12 +353,12 @@ function TarefaLista() {
         { title: 'Cliente', dataIndex: 'clienteNome', width: 150, render: (text) => text || '-' },
         { title: 'Processo', dataIndex: 'processoNumero', width: 150, render: (text) => text || '-' },
        
-        { title: 'Google', width: 70, render: (_, record) => (
+        { title: 'Outlook', width: 70, render: (_, record) => (
             
-            record.googleEventId ? (
-                <Tooltip title="Sincronizado com Google Agenda"> <GoogleOutlined style={{ color: '#4285f4', fontSize: 16 }} /> </Tooltip>
+            record.microsoftEventId ? (
+                <Tooltip title="Sincronizado com Microsoft Outlook"> <WindowsOutlined style={{ color: '#4285f4', fontSize: 16 }} /> </Tooltip>
             ) : (
-                <Tooltip title="Não sincronizado"> <GoogleOutlined style={{ color: '#ccc', fontSize: 16 }} /> </Tooltip>
+                <Tooltip title="Não sincronizado"> <WindowsOutlined style={{ color: '#ccc', fontSize: 16 }} /> </Tooltip>
             )
 
         ),},
@@ -470,9 +470,9 @@ function TarefaLista() {
                                         <Typography.Text strong style={{ color: '#1a3a5c', fontSize: 13 }}>{item.tarefa || 'Sem título'}</Typography.Text>
                                         <Tag color={statusColor} style={{ fontSize: 10, margin: 0, padding: '0px 6px', lineHeight: '18px' }}>{statusLabel}</Tag>
                                 
-                                        <Tag color={item.googleEventId ? 'success' : 'default'} style={{ fontSize: 10, margin: 0, padding: '0px 6px', lineHeight: '18px' }}>
-                                            {item.googleEventId ? <GoogleOutlined style={{ marginRight: 4 }} /> : null}
-                                            {item.googleEventId ? 'Sinc.' : 'Não sinc.'}
+                                        <Tag color={item.microsoftEventId ? 'success' : 'default'} style={{ fontSize: 10, margin: 0, padding: '0px 6px', lineHeight: '18px' }}>
+                                            {item.microsoftEventId ? <WindowsOutlined style={{ marginRight: 4 }} /> : null}
+                                            {item.microsoftEventId ? 'Sinc.' : 'Não sinc.'}
                                         </Tag>
                                 
                                     </div>

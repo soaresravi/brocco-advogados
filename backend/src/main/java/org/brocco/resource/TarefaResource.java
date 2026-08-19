@@ -41,7 +41,7 @@ public class TarefaResource {
     UriInfo uriInfo;
 
     @Inject
-    GoogleCalendarService googleCalendarService;
+    MicrosoftCalendarService microsoftCalendarService;
 
     private Long getUserId() {
         return Long.parseLong(jwt.getSubject());
@@ -220,11 +220,11 @@ public class TarefaResource {
         updateEntity(entity, request);
         entity.persist();
        
-        boolean googleOk = sincronizarGoogleCalendar(entity, true);
+        boolean microsoftOk = sincronizarMicrosoftCalendar(entity, true);
         logService.registrar(getUserId(),"CREATE","Tarefa",entity.id, "Criou tarefa: " + (entity.tarefa != null ? entity.tarefa.substring(0, Math.min(50, entity.tarefa.length())) : "sem descrição"), getClientIp(), getUserAgent());
        
-        if (!googleOk) {
-            return Response.status(498).entity(Map.of("message", "Token do Google Agenda expirado. Reconecte sua conta.","googleTokenExpirado", true)).build();
+        if (!microsoftOk) {
+            return Response.status(498).entity(Map.of("message", "Token do Microsoft Outlook expirado. Reconecte sua conta.","microsoftTokenExpirado", true)).build();
         }
         
         return Response.status(Response.Status.CREATED).entity(toResponse(entity)).build();
@@ -253,11 +253,11 @@ public class TarefaResource {
         updateEntity(entity, request);
         entity.persist();
       
-        boolean googleOk = sincronizarGoogleCalendar(entity, false);
+        boolean microsoftOk = sincronizarMicrosoftCalendar(entity, false);
         logService.registrar(getUserId(),"UPDATE","Tarefa", entity.id, "Atualizou tarefa: " + (tarefaAntiga != null ? tarefaAntiga.substring(0, Math.min(50, tarefaAntiga.length())) : "sem descrição"), getClientIp(), getUserAgent());
       
-        if (!googleOk) {
-            return Response.status(498).entity(Map.of("message", "Token do Google Agenda expirado. Reconecte sua conta.","googleTokenExpirado", true)).build();
+        if (!microsoftOk) {
+            return Response.status(498).entity(Map.of("message", "Token do Microsoft Outlook expirado. Reconecte sua conta.","microsoftTokenExpirado", true)).build();
         }
         
         return Response.ok(toResponse(entity)).build();
@@ -283,7 +283,7 @@ public class TarefaResource {
         }
 
         String tarefa = entity.tarefa;
-        String googleEventId = entity.googleEventId;
+        String microsoftEventId = entity.microsoftEventId;
 
         entity.delete();
 
@@ -291,12 +291,12 @@ public class TarefaResource {
 
             User user = User.findById(getUserId());
 
-            if (user.googleRefreshToken != null && !user.googleRefreshToken.isEmpty() && googleEventId != null) {
-                googleCalendarService.deletarEvento(user.googleRefreshToken, googleEventId);
+            if (user.microsoftRefreshToken != null && !user.microsoftRefreshToken.isEmpty() && microsoftEventId != null) {
+                microsoftCalendarService.deletarEvento(user.microsoftRefreshToken, microsoftEventId);
             }
 
         } catch (Exception e) {
-            System.out.println("Erro ao deletar evento do Google Calendar: " + e.getMessage());
+            System.out.println("Erro ao deletar evento do Microsoft Calendar: " + e.getMessage());
         }
 
         logService.registrar(getUserId(),"DELETE","Tarefa", id, "Excluiu tarefa: " + (tarefa != null ? tarefa.substring(0, Math.min(50, tarefa.length())) : "sem descrição"), getClientIp(), getUserAgent());
@@ -321,7 +321,7 @@ public class TarefaResource {
         response.andamento = entity.andamento;
         response.createdAt = entity.createdAt;
         response.updatedAt = entity.updatedAt;
-        response.googleEventId = entity.googleEventId; 
+        response.microsoftEventId = entity.microsoftEventId; 
 
         if (entity.responsavelId != null) {
             User user = User.findById(entity.responsavelId);
@@ -345,13 +345,13 @@ public class TarefaResource {
         entity.andamento = request.andamento;
     }
 
-    private boolean sincronizarGoogleCalendar(Tarefa entity, boolean isNew) {
+    private boolean sincronizarMicrosoftCalendar(Tarefa entity, boolean isNew) {
         
         try {
           
             User user = User.findById(getUserId());
     
-            if (user.googleRefreshToken == null || user.googleRefreshToken.isEmpty()) {
+            if (user.microsoftRefreshToken == null || user.microsoftRefreshToken.isEmpty()) {
                 return true;
             }
     
@@ -366,14 +366,14 @@ public class TarefaResource {
             Long duracao = 30L;
     
             if (isNew) {
-                String eventId = googleCalendarService.criarEvento(user.googleRefreshToken, user.googleEmail, titulo, descricao, entity.prazo, horaEvento, duracao);
-                entity.googleEventId = eventId;
+                String eventId = microsoftCalendarService.criarEvento(user.microsoftRefreshToken, titulo, descricao, entity.prazo, horaEvento, duracao);
+                entity.microsoftEventId = eventId;
                 entity.persist();
-            } else if (entity.googleEventId != null) {
-                googleCalendarService.atualizarEvento(user.googleRefreshToken, entity.googleEventId, titulo, descricao, entity.prazo, horaEvento, duracao);
+            } else if (entity.microsoftEventId != null) {
+                microsoftCalendarService.atualizarEvento(user.microsoftRefreshToken, entity.microsoftEventId, titulo, descricao, entity.prazo, horaEvento, duracao);
             } else {
-                String eventId = googleCalendarService.criarEvento(user.googleRefreshToken, user.googleEmail, titulo, descricao, entity.prazo, horaEvento, duracao);
-                entity.googleEventId = eventId;
+                String eventId = microsoftCalendarService.criarEvento(user.microsoftRefreshToken, titulo, descricao, entity.prazo, horaEvento, duracao);
+                entity.microsoftEventId = eventId;
                 entity.persist();
             }
     
@@ -381,19 +381,19 @@ public class TarefaResource {
     
         } catch (Exception e) {
            
-            System.err.println("Erro ao sincronizar com Google Calendar: " + e.getMessage());
+            System.err.println("Erro ao sincronizar com Microsoft Calendar: " + e.getMessage());
     
-            if (googleCalendarService.isTokenExpirado(e)) {
+            if (microsoftCalendarService.isTokenExpirado(e)) {
                 
                 User user = User.findById(getUserId());
                 
                 if (user != null) {
                   
-                    user.googleRefreshToken = null;
-                    user.googleEmail = null;
+                    user.microsoftRefreshToken = null;
+                    user.microsoftEmail = null;
                     user.persist();
                   
-                    System.err.println("Token Google expirado, desconectado automaticamente");
+                    System.err.println("Token Microsoft expirado, desconectado automaticamente");
                 
                 }
                 

@@ -14,6 +14,6 @@ public class AtendimentoResponse {
     public ComoConheceu comoConheceu;
     public SimNao fechouContrato;
     public BigDecimal valorConsulta;
-    public String observacoes, googleEventId;
+    public String observacoes, microsoftEventId;
     public LocalDateTime createdAt, updatedAt;
 }

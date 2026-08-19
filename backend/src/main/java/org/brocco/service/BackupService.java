@@ -299,7 +299,7 @@ public class BackupService {
                             audiencia.detalhes = (String) dados.get("detalhes");
                             audiencia.local = (String) dados.get("local");
                             audiencia.observacoes = (String) dados.get("observacoes");
-                            audiencia.googleEventId = (String) dados.get("googleEventId");
+                            audiencia.microsoftEventId = (String) dados.get("microsoftEventId");
 
                             audiencia.persist();
                             registrosRestaurados++;
@@ -351,7 +351,7 @@ public class BackupService {
 
                             atendimento.valorConsulta = dados.get("valorConsulta") != null ? new java.math.BigDecimal(dados.get("valorConsulta").toString()) : java.math.BigDecimal.ZERO;
                             atendimento.observacoes = (String) dados.get("observacoes");
-                            atendimento.googleEventId = (String) dados.get("googleEventId");
+                            atendimento.microsoftEventId = (String) dados.get("microsoftEventId");
 
                             atendimento.persist();
                             registrosRestaurados++;
@@ -470,7 +470,7 @@ public class BackupService {
 
                             tarefa.clienteNome = (String) dados.get("clienteNome");
                             tarefa.andamento = (String) dados.get("andamento");
-                            tarefa.googleEventId = (String) dados.get("googleEventId");
+                            tarefa.microsoftEventId = (String) dados.get("microsoftEventId");
 
                             tarefa.persist();
                             registrosRestaurados++;

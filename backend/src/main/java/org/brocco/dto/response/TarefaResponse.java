@@ -16,5 +16,5 @@ public class TarefaResponse {
     public Long clienteId;
     public String clienteNome, andamento;
     public LocalDateTime createdAt, updatedAt;
-    public String googleEventId;
+    public String microsoftEventId;
 }

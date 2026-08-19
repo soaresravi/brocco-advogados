@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Card, Form, Input, Button, Space, Typography, Alert, Spin, Row, Col, Statistic, Modal, Table, Upload, Select, Tag, DatePicker, Drawer, notification, Divider, message } from 'antd';
-import { GoogleOutlined, DisconnectOutlined, CheckCircleOutlined, DownloadOutlined, UploadOutlined, DeleteOutlined, ExclamationCircleOutlined, FileTextOutlined, UserOutlined, PlusOutlined, EditOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
-import { getCurrentUser, updatePerfil, alterarSenha, getGoogleStatus, disconnectGoogle, getAuthUrl } from '../services/configService';
+import { Card, Form, Input, Button, Space, Typography, Alert, Spin, Row, Col, Modal, Table, Upload, Select, Tag, DatePicker, notification } from 'antd';
+import { WindowsOutlined, UserOutlined, PlusOutlined, ReloadOutlined, DownloadOutlined, CheckCircleOutlined, DisconnectOutlined, EditOutlined, UploadOutlined, FileTextOutlined, DeleteOutlined } from '@ant-design/icons';
+import { getMicrosoftStatus, disconnectMicrosoft, getCurrentUser, updatePerfil, alterarSenha, getMicrosoftAuthUrl } from '../services/configService';
 import { getUsuarios, criarUsuario, atualizarUsuario, deletarUsuario } from '../services/userService';
 import { getLogs, limparLogs } from '../services/logService';
 
@@ -15,9 +15,9 @@ function Configuracoes() {
     const [loading, setLoading] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [user, setUser] = useState(null);
-    const [googleConnected, setGoogleConnected] = useState(false);
-    const [googleEmail, setGoogleEmail] = useState('');
-    const [googleLoading, setGoogleLoading] = useState(false);
+    const [microsoftConnected, setMicrosoftConnected] = useState(false);
+    const [microsoftEmail, setMicrosoftEmail] = useState('');
+    const [microsoftLoading, setMicrosoftLoading] = useState(false);
 
     const [logs, setLogs] = useState([]);
     const [logsLoading, setLogsLoading] = useState(false);
@@ -82,14 +82,13 @@ function Configuracoes() {
 
         try {
 
-            const [userData, googleStatus] = await Promise.all([
+            const [userData, microsoftStatus] = await Promise.all([
                 getCurrentUser(),
-                getGoogleStatus().catch(() => ({ connected: false, email: null }))
+                getMicrosoftStatus().catch(() => ({ connected: false, email: null }))
             ]);
 
-            setUser(userData);
-            setGoogleConnected(googleStatus.connected);
-            setGoogleEmail(googleStatus.email);
+            setMicrosoftConnected(microsoftStatus.connected);
+            setMicrosoftEmail(microsoftStatus.email || '');
 
             perfilForm.setFieldsValue({
                 nome: userData.nome,
@@ -161,21 +160,21 @@ function Configuracoes() {
 
     };
 
-    const handleConnectGoogle = async () => {
+    const handleConnectMicrosoft = async () => {
 
-        setGoogleLoading(true);
+        setMicrosoftLoading(true);
 
         try {
 
-            const response = await getAuthUrl();
-            const googleWindow = window.open(response.url, '_blank');
+            const response = await getMicrosoftAuthUrl();
+            const msWindow = window.open(response.url, '_blank');
             
             const interval = setInterval(() => {
                 
-                if (googleWindow && googleWindow.closed) {
+                if (msWindow && msWindow.closed) {
                     clearInterval(interval);
                     carregarDados();
-                    showNotification('success', 'Google Agenda conectado com sucesso!');
+                    showNotification('success', 'Outlook conectado com sucesso!');
                 }
 
             }, 500);
@@ -183,21 +182,21 @@ function Configuracoes() {
             setTimeout(() => clearInterval(interval), 300000);
 
         } catch (error) {
-            showNotification('error', 'Erro ao conectar com Google');
+            showNotification('error', 'Erro ao conectar com Outlook');
         } finally {
-            setGoogleLoading(false);
+            setMicrosoftLoading(false);
         }
 
     };
 
-    const handleDisconnectGoogle = async () => {
+    const handleDisconnectMicrosoft = async () => {
         
-        Modal.confirm({ title: 'Desconectar Google Agenda', content: 'Tem certeza que deseja desconectar sua conta do Google?', okText: 'Sim, desconectar', cancelText: 'Cancelar', centered: true, onOk: async () => {
+        Modal.confirm({ title: 'Desconectar Outlook', content: 'Tem certeza que deseja desconectar sua conta do Outlook?', okText: 'Sim, desconectar', cancelText: 'Cancelar', centered: true, onOk: async () => {
             
             try {
-                await disconnectGoogle();
+                await disconnectMicrosoft();
                 await carregarDados();
-                showNotification('success', 'Google Agenda desconectado!');
+                showNotification('success', 'Outlook desconectado!');
             } catch (error) {
                 showNotification('error', 'Erro ao desconectar');
             }
@@ -511,20 +510,20 @@ function Configuracoes() {
         
         </Card>
 
-        <Card title={<span style={{ color: '#1a3a5c' }}><GoogleOutlined /> Google Agenda</span>} style={{ marginBottom: 24 }}>
+        <Card title={<span style={{ color: '#1a3a5c' }}><WindowsOutlined /> Outlook Agenda</span>} style={{ marginBottom: 24 }}>
             
-            {googleConnected ? (
+            {microsoftConnected ? (
                 
                 <Space orientation="vertical" style={{ width: '100%' }}>
-                    <Alert title="Conectado" description={googleEmail && `Conta: ${googleEmail}`} type="success" icon={<CheckCircleOutlined />} showIcon />
-                    <Button danger icon={<DisconnectOutlined />} onClick={handleDisconnectGoogle} loading={googleLoading}> Desconectar Google Agenda </Button>
+                    <Alert title="Conectado" description={microsoftEmail && `Conta: ${microsoftEmail}`} type="success" icon={<CheckCircleOutlined />} showIcon />
+                    <Button danger icon={<DisconnectOutlined />} onClick={handleDisconnectMicrosoft} loading={microsoftLoading}> Desconectar Outlook </Button>
                 </Space>
             
             ) : (
 
                 <Space orientation="vertical" style={{ width: '100%' }}>
-                    <Alert title="Não conectado" description="Conecte sua conta do Google para sincronizar automaticamente audiências e tarefas." type="warning" showIcon />
-                    <Button type="primary" icon={<GoogleOutlined />} onClick={handleConnectGoogle} loading={googleLoading} style={{ background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' }}> Conectar Google Agenda </Button>
+                    <Alert title="Não conectado" description="Conecte sua conta do Outlook para sincronizar automaticamente audiências e tarefas." type="warning" showIcon />
+                    <Button type="primary" icon={<WindowsOutlined />} onClick={handleConnectMicrosoft} loading={microsoftLoading} style={{ background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' }}> Conectar Outlook </Button>
                 </Space>
             
             )}
@@ -670,7 +669,7 @@ function Configuracoes() {
                 )}
                     
                 {isEditMode && (          
-                    <Form.Item name="senha" label="Nova senha (deixe em branco para não alterar)" rules={[ { min: 6, message: 'Senha deve ter pelo menos 6 caracteres' } ]}><Input.Password /> </Form.Item>   
+                    <Form.Item name="senha" label="Nova senha (deixe em branco para não alterar)" rules={[ { min: 6, title: 'Senha deve ter pelo menos 6 caracteres' } ]}><Input.Password /> </Form.Item>   
                 )}
                     
                 <Form.Item name="permissao" label="Permissão" rules={[{ required: true }]}>

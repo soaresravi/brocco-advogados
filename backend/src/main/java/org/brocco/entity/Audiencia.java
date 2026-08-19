@@ -29,8 +29,8 @@ public class Audiencia extends PanacheEntity {
 
     public String detalhes, local, observacoes;
 
-    @Column(name = "google_event_id")
-    public String googleEventId;
+    @Column(name = "microsoft_event_id")
+    public String microsoftEventId;
 
     @Column(name = "created_at")
     public LocalDateTime createdAt;

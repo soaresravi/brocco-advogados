@@ -56,12 +56,16 @@ export const getUsuariosSimples = async () => {
     return response.data;
 };
 
-export const getGoogleStatus = async () => {
-    const response = await api.get('/auth/google/status');
+export const getMicrosoftStatus = async () => {
+    const response = await api.get('/auth/microsoft/status');
     return response.data;
 };
 
-export const getGoogleAuthUrl = async () => {
-    const response = await api.get('/auth/google/auth-url');
+export const getMicrosoftAuthUrl = async () => {
+    const response = await api.get('/auth/microsoft/auth-url');
     return response.data;
+};
+
+export const disconnectMicrosoft = async () => {
+    await api.delete('/auth/microsoft/disconnect');
 };

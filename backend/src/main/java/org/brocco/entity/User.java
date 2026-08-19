@@ -31,11 +31,11 @@ public class User extends PanacheEntity {
 
     public Permissao permissao = Permissao.READ;
 
-    @Column(name = "google_refresh_token", columnDefinition = "TEXT")
-    public String googleRefreshToken;
-
-    @Column(name = "google_email")
-    public String googleEmail;
+    @Column(name = "microsoft_refresh_token", columnDefinition = "LONGTEXT")
+    public String microsoftRefreshToken;
+    
+    @Column(name = "microsoft_email")
+    public String microsoftEmail;
 
     @Column(name = "created_at")
     public LocalDateTime createdAt;
