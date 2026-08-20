@@ -87,7 +87,7 @@ function RecebimentoLista() {
 
         try {
             const response = await getRecebimentosAtrasados();
-            setAtrasados(response);
+            setAtrasados(Array.isArray(response) ? response : []);
         } catch (error) {
             console.error('Erro ao carregar atrasados:', error);
         }

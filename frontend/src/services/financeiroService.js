@@ -33,7 +33,7 @@ export const deleteRecebimento = async (id) => {
 
 export const getRecebimentosAtrasados = async (id) => {
     const response = await api.get('/financeiro/recebimentos/alertas/atrasados');
-    return response.data;
+    return Array.isArray(response.data) ? response.data : [];
 };
 
 export const getDespesas = async (page = 0, size = 10, filters = {}) => {
