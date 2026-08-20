@@ -42,9 +42,9 @@ function AtendimentosDashboard() {
                 getAtendimentosHoje(),
             ]);
 
-            setData(dashboard);
-            setContatosHoje(contatos);
-            setAtendimentosHoje(hoje);
+            setData(dashboard && typeof dashboard === 'object' ? dashboard : null);
+            setContatosHoje(Array.isArray(contatos) ? contatos : []);
+            setAtendimentosHoje(Array.isArray(hoje) ? hoje : []);
 
         } catch (error) {
             console.error('Erro ao carregar dashboard:', error);

@@ -8,7 +8,6 @@ function GraficoLinha({ data, title, ano, isMobile }) {
         return <div style={{ textAlign: 'center', padding: 40, fontSize: 12, color: '#94a3b8' }}>Sem dados para exibir</div>;
     }
 
-    // GARANTE QUE data É UM OBJETO VÁLIDO
     const chartData = meses.map((mes, index) => ({
         mes,
         quantidade: (data[index + 1] !== undefined && data[index + 1] !== null) ? data[index + 1] : 0,

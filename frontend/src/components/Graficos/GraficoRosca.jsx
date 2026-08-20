@@ -27,16 +27,20 @@ function GraficoRosca({ data, title, isMobile }) {
 
     }, []);
 
-    if (!data || Object.keys(data).length === 0) {
-        return <div style={{ textAlign: 'center', padding: 20, fontSize: 12, color: '#94a3b8' }}> Sem dados para exibir </div>;
+    if (!data || typeof data !== 'object' || Object.keys(data).length === 0) {
+        return <div style={{ textAlign: 'center', padding: 20, fontSize: 12, color: '#94a3b8' }}>Sem dados para exibir</div>;
     }
 
-    const chartData = Object.entries(data).map(([label, value], index) => ({
+    const chartData = Object.entries(data).filter(([_, value]) => value !== null && value !== undefined).map(([label, value], index) => ({
         label: label,
-        value: typeof value === 'object' ? value.quantidade : value,
-        percentual: typeof value === 'object' ? value.percentual : 0,
+        value: typeof value === 'object' ? (value.quantidade || 0) : (typeof value === 'number' ? value : 0),
+        percentual: typeof value === 'object' ? (value.percentual || 0) : 0,
         fill: COLORS[index % COLORS.length],
-    }));
+    })).filter(item => item.value > 0);
+
+    if (chartData.length === 0) {
+        return <div style={{ textAlign: 'center', padding: 20, fontSize: 12, color: '#94a3b8' }}>Sem dados para exibir</div>;
+    }
 
     const legendItems = chartData.map((item) => ({
         label: item.label,

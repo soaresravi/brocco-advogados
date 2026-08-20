@@ -39,12 +39,14 @@ function ProcessosPrazos() {
                 getCalendarioPrazos(),
             ]);
 
-            setPrazosHoje(hoje);
-            setPrazosProximos(proximos);
-            setPrazosFiltrados(proximos);
-            setPrazosEmAberto(emAberto);
-            setPrazosFiltrados(emAberto?.content || []);
-            setCalendario(calendarioData);
+            setPrazosHoje(Array.isArray(hoje) ? hoje : []);
+            setPrazosProximos(Array.isArray(proximos) ? proximos : []);
+            
+            const emAbertoData = emAberto && typeof emAberto === 'object' ? emAberto : { total: 0, content: [] };
+            
+            setPrazosEmAberto(emAbertoData);
+            setPrazosFiltrados(Array.isArray(emAbertoData.content) ? emAbertoData.content : []);
+            setCalendario(calendarioData && typeof calendarioData === 'object' ? calendarioData : {});
         
         } catch (error) {
            
