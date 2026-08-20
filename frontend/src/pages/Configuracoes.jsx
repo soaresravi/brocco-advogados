@@ -652,7 +652,7 @@ function Configuracoes() {
             <p style={{ fontSize: isMobile ? 11 : 12, color: '#ff4d4f', marginTop: 12, marginBottom: 0, fontWeight: 500 }}> ATENÇÃO: Esta ação é irreversível. Todos os seus dados serão permanentemente excluídos. </p>
         </div>
 
-        <Modal title={isEditMode ? 'Editar usuário' : 'Novo usuário'} open={modalUsuarioVisible} destroyOnHidden onCancel={() => setModalUsuarioVisible(false)} onOk={handleSalvarUsuario} confirmLoading={modalUsuarioLoading} centered width={isMobile ? '90%' : 500}>
+        <Modal title={isEditMode ? 'Editar usuário' : 'Novo usuário'} open={modalUsuarioVisible} onCancel={() => setModalUsuarioVisible(false)} onOk={handleSalvarUsuario} confirmLoading={modalUsuarioLoading} centered width={isMobile ? '90%' : 500}>
                 
             <Form form={usuarioForm} layout="vertical" size="small">
                     
