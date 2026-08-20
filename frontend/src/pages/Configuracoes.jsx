@@ -245,7 +245,6 @@ function Configuracoes() {
             nome: record.nome,
             email: record.email,
             permissao: record.permissao === 'ADMIN' ? 'EDIT' : record.permissao,
-            senha: '',
         });
     
         setModalUsuarioVisible(true);
@@ -253,19 +252,14 @@ function Configuracoes() {
     };
     
     const handleSalvarUsuario = async () => {
+     
         try {
-            // 🔥 FAZ A VALIDAÇÃO MANUALMENTE
+     
             const values = await usuarioForm.validateFields();
-            
-            // 🔥 VERIFICA SE A SENHA FOI PREENCHIDA (apenas para novo usuário)
-            if (!isEditMode && (!values.senha || values.senha.length < 6)) {
-                showNotification('error', 'Senha deve ter pelo menos 6 caracteres');
-                return;
-            }
-            
             setModalUsuarioLoading(true);
     
             if (isEditMode && editingUser) {
+             
                 const dataToSend = {
                     nome: values.nome,
                     email: values.email,
@@ -279,20 +273,6 @@ function Configuracoes() {
                 await atualizarUsuario(editingUser.id, dataToSend);
                 showNotification('success', 'Usuário atualizado com sucesso!');
             } else {
-                // 🔥 NOVO USUÁRIO - SENHA É OBRIGATÓRIA
-                if (!values.senha || values.senha.length < 6) {
-                    showNotification('error', 'Senha deve ter pelo menos 6 caracteres');
-                    setModalUsuarioLoading(false);
-                    return;
-                }
-                
-                // 🔥 VERIFICA SE AS SENHAS COINCIDEM
-                if (values.senha !== values.confirmarSenha) {
-                    showNotification('error', 'As senhas não coincidem');
-                    setModalUsuarioLoading(false);
-                    return;
-                }
-                
                 await criarUsuario(values);
                 showNotification('success', 'Usuário criado com sucesso!');
             }
@@ -301,11 +281,17 @@ function Configuracoes() {
             carregarUsuarios(0, usuariosPagination.pageSize);
     
         } catch (error) {
-            console.error('Erro ao salvar usuário:', error);
-            showNotification('error', error.response?.data?.message || 'Erro ao salvar usuário');
+
+            if (error?.response?.data?.message) {
+                showNotification('error', error.response.data.message);
+            } else if (error?.message && !error?.errorFields) {
+                showNotification('error', 'Erro ao salvar usuário');
+            }
+
         } finally {
             setModalUsuarioLoading(false);
         }
+
     };
 
     const handleExcluirUsuario = (record) => {
@@ -672,9 +658,21 @@ function Configuracoes() {
             <p style={{ fontSize: isMobile ? 11 : 12, color: '#ff4d4f', marginTop: 12, marginBottom: 0, fontWeight: 500 }}> ATENÇÃO: Esta ação é irreversível. Todos os seus dados serão permanentemente excluídos. </p>
         </div>
 
-        <Modal title={isEditMode ? 'Editar usuário' : 'Novo usuário'} open={modalUsuarioVisible} onCancel={() => setModalUsuarioVisible(false)} onOk={handleSalvarUsuario} confirmLoading={modalUsuarioLoading} centered width={isMobile ? '90%' : 500}>
+        <Modal
+    title={isEditMode ? 'Editar usuário' : 'Novo usuário'}
+    open={modalUsuarioVisible}
+    onCancel={() => {
+        setModalUsuarioVisible(false);
+        usuarioForm.resetFields();
+    }}
+    onOk={handleSalvarUsuario}
+    confirmLoading={modalUsuarioLoading}
+    centered
+    width={isMobile ? '90%' : 500}
+    destroyOnHidden   // ← importante
+>
                 
-            <Form form={usuarioForm} layout="vertical" size="small">
+            <Form key={isEditMode ? 'edit' : 'create'} form={usuarioForm} layout="vertical" size="small">
                     
                 <Form.Item name="nome" label="Nome" rules={[{ required: true }]}><Input /></Form.Item>
                 <Form.Item name="email" label="E-mail" rules={[{ required: true, type: 'email' }]}><Input /></Form.Item>
