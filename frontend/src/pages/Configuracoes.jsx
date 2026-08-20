@@ -659,15 +659,6 @@ function Configuracoes() {
                 <Form.Item name="nome" label="Nome" rules={[{ required: true }]}><Input /></Form.Item>
                 <Form.Item name="email" label="E-mail" rules={[{ required: true, type: 'email' }]}><Input /></Form.Item>
                     
-                {!isEditMode && (
-                        
-                    <>
-                        <Form.Item name="senha" label="Senha" rules={[{ required: true, min: 6 }]}><Input.Password /> </Form.Item>
-                        <Form.Item name="confirmarSenha" label="Confirmar senha" rules={[{ required: true }]}><Input.Password /> </Form.Item>
-                    </>
-                        
-                )}
-                    
                     <Form.Item
   name="senha"
   label={isEditMode ? 'Nova senha (deixe em branco para não alterar)' : 'Senha'}
