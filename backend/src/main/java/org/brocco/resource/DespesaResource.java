@@ -121,6 +121,10 @@ public class DespesaResource {
         List<Despesa> lista = Despesa.find(query.toString(), params.toArray()).page(page, size).list();
         List<DespesaResponse> responseList = lista.stream().map(this::toResponse).collect(Collectors.toList());
 
+        if (responseList == null) {
+            responseList = new ArrayList<>();
+        }
+
         return Response.ok(new PageResponse<>(responseList, total, page, size)).build();
 
     }
