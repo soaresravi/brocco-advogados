@@ -66,9 +66,10 @@ function DespesaLista() {
 
         try {
             const response = await getDespesasAtrasados();
-            setAtrasados(response);
+            setAtrasados(Array.isArray(response) ? response : []);
         } catch (error) {
             console.error('Erro ao carregar atrasados:', error);
+            setAtrasados([]);
         }
 
     };

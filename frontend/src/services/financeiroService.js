@@ -63,7 +63,7 @@ export const deleteDespesa = async (id) => {
 
 export const getDespesasAtrasados = async () => {
     const response = await api.get('/financeiro/despesas/alertas/atrasados');
-    return response.data;
+    return Array.isArray(response.data) ? response.data : [];
 };
 
 export const getClientesOptions = async (search = '') => {
