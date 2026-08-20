@@ -253,10 +253,16 @@ function Configuracoes() {
     };
     
     const handleSalvarUsuario = async () => {
-     
         try {
-     
+            // 🔥 FAZ A VALIDAÇÃO MANUALMENTE
             const values = await usuarioForm.validateFields();
+            
+            // 🔥 VERIFICA SE A SENHA FOI PREENCHIDA (apenas para novo usuário)
+            if (!isEditMode && (!values.senha || values.senha.length < 6)) {
+                showNotification('error', 'Senha deve ter pelo menos 6 caracteres');
+                return;
+            }
+            
             setModalUsuarioLoading(true);
     
             if (isEditMode && editingUser) {
@@ -273,6 +279,20 @@ function Configuracoes() {
                 await atualizarUsuario(editingUser.id, dataToSend);
                 showNotification('success', 'Usuário atualizado com sucesso!');
             } else {
+                // 🔥 NOVO USUÁRIO - SENHA É OBRIGATÓRIA
+                if (!values.senha || values.senha.length < 6) {
+                    showNotification('error', 'Senha deve ter pelo menos 6 caracteres');
+                    setModalUsuarioLoading(false);
+                    return;
+                }
+                
+                // 🔥 VERIFICA SE AS SENHAS COINCIDEM
+                if (values.senha !== values.confirmarSenha) {
+                    showNotification('error', 'As senhas não coincidem');
+                    setModalUsuarioLoading(false);
+                    return;
+                }
+                
                 await criarUsuario(values);
                 showNotification('success', 'Usuário criado com sucesso!');
             }
@@ -281,11 +301,11 @@ function Configuracoes() {
             carregarUsuarios(0, usuariosPagination.pageSize);
     
         } catch (error) {
+            console.error('Erro ao salvar usuário:', error);
             showNotification('error', error.response?.data?.message || 'Erro ao salvar usuário');
         } finally {
             setModalUsuarioLoading(false);
         }
-
     };
 
     const handleExcluirUsuario = (record) => {
@@ -660,26 +680,12 @@ function Configuracoes() {
                 <Form.Item name="email" label="E-mail" rules={[{ required: true, type: 'email' }]}><Input /></Form.Item>
                     
                 {!isEditMode && (
-                
+                        
                     <>
-                        <Form.Item name="senha" label="Senha" rules={[{ required: true, min: 6, message: 'Senha deve ter pelo menos 6 caracteres' }]}><Input.Password /> </Form.Item>
-                        
-                        <Form.Item name="confirmarSenha" label="Confirmar senha" rules={[ { required: true, message: 'Confirme sua senha' }, ({ getFieldValue }) => ({
-                            
-                            validator(_, value) {
-                                
-                                if (!value || getFieldValue('senha') === value) {
-                                    return Promise.resolve();
-                                }
-                                
-                                return Promise.reject(new Error('As senhas não coincidem'));
-                            
-                            },
-                        
-                        }), ]}><Input.Password /> </Form.Item>
-                    
+                        <Form.Item name="senha" label="Senha" rules={[{ required: true, min: 6 }]}><Input.Password /> </Form.Item>
+                        <Form.Item name="confirmarSenha" label="Confirmar senha" rules={[{ required: true }]}><Input.Password /> </Form.Item>
                     </>
-                
+                        
                 )}
                     
                 {isEditMode && (          
