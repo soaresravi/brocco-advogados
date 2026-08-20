@@ -278,7 +278,7 @@ function Configuracoes() {
             }
     
             setModalUsuarioVisible(false);
-            carregarUsuarios(0, usuariosPagination.pageSize);
+            await carregarUsuarios(0, 10);
     
         } catch (error) {
             showNotification('error', error.response?.data?.message || 'Erro ao salvar usuário');
