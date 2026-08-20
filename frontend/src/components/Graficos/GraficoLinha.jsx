@@ -4,27 +4,15 @@ const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'O
 
 function GraficoLinha({ data, title, ano, isMobile }) {
 
-    if (!chartData || chartData.length === 0) {
+    if (!data || typeof data !== 'object' || Object.keys(data).length === 0) {
         return <div style={{ textAlign: 'center', padding: 40, fontSize: 12, color: '#94a3b8' }}>Sem dados para exibir</div>;
     }
 
-    const chartData = (() => {
-       
-        if (!data) return [];
-        if (Array.isArray(data)) return data;
-       
-        if (typeof data === 'object') {
-           
-            return meses.map((mes, index) => ({
-                mes,
-                quantidade: data[index + 1] || 0,
-            }));
-
-        }
-
-        return [];
-        
-    })();
+    // GARANTE QUE data É UM OBJETO VÁLIDO
+    const chartData = meses.map((mes, index) => ({
+        mes,
+        quantidade: (data[index + 1] !== undefined && data[index + 1] !== null) ? data[index + 1] : 0,
+    }));
 
     return (
     

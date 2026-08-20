@@ -42,9 +42,9 @@ function AudienciasDashboard() {
                 getAudienciasProximos(),
             ]);
 
-            setData(dashboard);
-            setAudienciasHoje(hoje);
-            setAudienciasProximos(proximos);
+            setData(dashboard && typeof dashboard === 'object' ? dashboard : null);
+            setAudienciasHoje(Array.isArray(hoje) ? hoje : []);
+            setAudienciasProximos(Array.isArray(proximos) ? proximos : []);
 
         } catch (error) {
             console.error('Erro ao carregar dashboard:', error);
