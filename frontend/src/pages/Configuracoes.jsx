@@ -245,6 +245,7 @@ function Configuracoes() {
             nome: record.nome,
             email: record.email,
             permissao: record.permissao === 'ADMIN' ? 'EDIT' : record.permissao,
+            senha: '',
         });
     
         setModalUsuarioVisible(true);
@@ -259,7 +260,6 @@ function Configuracoes() {
             setModalUsuarioLoading(true);
     
             if (isEditMode && editingUser) {
-             
                 const dataToSend = {
                     nome: values.nome,
                     email: values.email,
@@ -281,13 +281,7 @@ function Configuracoes() {
             carregarUsuarios(0, usuariosPagination.pageSize);
     
         } catch (error) {
-
-            if (error?.response?.data?.message) {
-                showNotification('error', error.response.data.message);
-            } else if (error?.message && !error?.errorFields) {
-                showNotification('error', 'Erro ao salvar usuário');
-            }
-
+            showNotification('error', error.response?.data?.message || 'Erro ao salvar usuário');
         } finally {
             setModalUsuarioLoading(false);
         }
@@ -658,21 +652,9 @@ function Configuracoes() {
             <p style={{ fontSize: isMobile ? 11 : 12, color: '#ff4d4f', marginTop: 12, marginBottom: 0, fontWeight: 500 }}> ATENÇÃO: Esta ação é irreversível. Todos os seus dados serão permanentemente excluídos. </p>
         </div>
 
-        <Modal
-    title={isEditMode ? 'Editar usuário' : 'Novo usuário'}
-    open={modalUsuarioVisible}
-    onCancel={() => {
-        setModalUsuarioVisible(false);
-        usuarioForm.resetFields();
-    }}
-    onOk={handleSalvarUsuario}
-    confirmLoading={modalUsuarioLoading}
-    centered
-    width={isMobile ? '90%' : 500}
-    destroyOnHidden   // ← importante
->
+        <Modal title={isEditMode ? 'Editar usuário' : 'Novo usuário'} open={modalUsuarioVisible} destroyOnHidden onCancel={() => setModalUsuarioVisible(false)} onOk={handleSalvarUsuario} confirmLoading={modalUsuarioLoading} centered width={isMobile ? '90%' : 500}>
                 
-            <Form key={isEditMode ? 'edit' : 'create'} form={usuarioForm} layout="vertical" size="small">
+            <Form form={usuarioForm} layout="vertical" size="small">
                     
                 <Form.Item name="nome" label="Nome" rules={[{ required: true }]}><Input /></Form.Item>
                 <Form.Item name="email" label="E-mail" rules={[{ required: true, type: 'email' }]}><Input /></Form.Item>
@@ -686,9 +668,30 @@ function Configuracoes() {
                         
                 )}
                     
-                {isEditMode && (          
-                    <Form.Item name="senha" label="Nova senha (deixe em branco para não alterar)" rules={[ { min: 6, title: 'Senha deve ter pelo menos 6 caracteres' } ]}><Input.Password /> </Form.Item>   
-                )}
+                    <Form.Item
+  name="senha"
+  label={isEditMode ? 'Nova senha (deixe em branco para não alterar)' : 'Senha'}
+  rules={
+    isEditMode
+      ? [{ min: 6, message: 'Senha deve ter pelo menos 6 caracteres' }]
+      : [
+          { required: true, message: 'Por favor, insira a senha' },
+          { min: 6, message: 'Senha deve ter pelo menos 6 caracteres' },
+        ]
+  }
+>
+  <Input.Password />
+</Form.Item>
+
+{!isEditMode && (
+  <Form.Item
+    name="confirmarSenha"
+    label="Confirmar senha"
+    rules={[{ required: true, message: 'Por favor, confirme a senha' }]}
+  >
+    <Input.Password />
+  </Form.Item>
+)}
                     
                 <Form.Item name="permissao" label="Permissão" rules={[{ required: true }]}>
                     <Select options={[ { value: 'EDIT', label: 'Edição' }, { value: 'READ', label: 'Leitura' }, ]} />
