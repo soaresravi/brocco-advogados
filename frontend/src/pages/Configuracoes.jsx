@@ -660,12 +660,26 @@ function Configuracoes() {
                 <Form.Item name="email" label="E-mail" rules={[{ required: true, type: 'email' }]}><Input /></Form.Item>
                     
                 {!isEditMode && (
-                        
+                
                     <>
-                        <Form.Item name="senha" label="Senha" rules={[{ required: true, min: 6 }]}><Input.Password /> </Form.Item>
-                        <Form.Item name="confirmarSenha" label="Confirmar senha" rules={[{ required: true }]}><Input.Password /> </Form.Item>
-                    </>
+                        <Form.Item name="senha" label="Senha" rules={[{ required: true, min: 6, message: 'Senha deve ter pelo menos 6 caracteres' }]}><Input.Password /> </Form.Item>
                         
+                        <Form.Item name="confirmarSenha" label="Confirmar senha" rules={[ { required: true, message: 'Confirme sua senha' }, ({ getFieldValue }) => ({
+                            
+                            validator(_, value) {
+                                
+                                if (!value || getFieldValue('senha') === value) {
+                                    return Promise.resolve();
+                                }
+                                
+                                return Promise.reject(new Error('As senhas não coincidem'));
+                            
+                            },
+                        
+                        }), ]}><Input.Password /> </Form.Item>
+                    
+                    </>
+                
                 )}
                     
                 {isEditMode && (          
