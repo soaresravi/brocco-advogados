@@ -17,10 +17,10 @@ export const createWhatsAppContato = async (data) => {
 };
 
 export const updateWhatsAppContato = async (id, data) => {
-    const response = await api.put(`/whatsapp${id}`, data);
+    const response = await api.put(`/whatsapp/${id}`, data);
     return response.data;
 };
 
 export const deleteWhatsAppContato = async (id) => {
-    await api.delete(`/whatsapp${id}`);
+    await api.delete(`/whatsapp/${id}`);
 };
