@@ -201,7 +201,7 @@ public class WhatsAppResource {
         }
 
         Long adminId = getAdminId();
-        WhatsAppContato entity = WhatsAppContato.find("id = ?1 and adminId = ?2", id, adminId).firstResult();
+        WhatsAppContato entity = WhatsAppContato.find("id = ?1 and (adminId = ?2 or adminId is null)", id, adminId).firstResult();
 
         if (entity == null) {
             return Response.status(404).entity(new ErroResponse(404, "Não encontrado", "Contato não encontrado", uriInfo.getPath())).build();
