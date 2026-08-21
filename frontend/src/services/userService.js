@@ -11,7 +11,7 @@ export const getUsuariosSimples = async () => {
 };
 
 export const criarUsuario = async (data) => {
-    const response = await api.post('/users', data);
+    const response = await api.post('/users/', data);
     return response.data;
 };
 
