@@ -164,7 +164,7 @@ public class WhatsAppResource {
     @Transactional
     @RolesAllowed({"ADMIN", "EDIT"})
 
-    public Response atualizar(@QueryParam("id") Long id, @Valid WhatsAppContatoRequest request) {
+    public Response atualizar(@PathParam("id") Long id, @Valid WhatsAppContatoRequest request) {
 
         if (!canEdit()) {
             return Response.status(403).entity(new ErroResponse(403, "Proibido", "Você não tem permissão para editar contatos", uriInfo.getPath())).build();
