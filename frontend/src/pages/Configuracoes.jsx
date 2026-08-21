@@ -231,25 +231,36 @@ function Configuracoes() {
     const handleNovoUsuario = () => {
         setIsEditMode(false);
         setEditingUser(null);
+        
+        // 🔥 RESETA O FORM
         usuarioForm.resetFields();
-        usuarioForm.setFieldsValue({ permissao: 'EDIT' });
+        
+        // 🔥 SETA VALORES PADRÃO
+        usuarioForm.setFieldsValue({
+            permissao: 'EDIT',
+            senha: '',
+            confirmarSenha: '',
+        });
+        
         setModalUsuarioVisible(true);
     };
 
     const handleEditarUsuario = (record) => {
-       
         setIsEditMode(true);
         setEditingUser(record);
-    
+        
+        // 🔥 RESETA O FORM ANTES DE POPULAR
+        usuarioForm.resetFields();
+        
+        // 🔥 POPULA COM OS VALORES CORRETOS
         usuarioForm.setFieldsValue({
-            nome: record.nome,
-            email: record.email,
+            nome: record.nome || '',
+            email: record.email || '',
             permissao: record.permissao === 'ADMIN' ? 'EDIT' : record.permissao,
-            senha: '',
+            senha: '', // Deixa vazio para não expor
         });
-    
+        
         setModalUsuarioVisible(true);
-
     };
     
     const handleSalvarUsuario = async () => {
@@ -658,47 +669,73 @@ function Configuracoes() {
             <Button danger icon={<DeleteOutlined />} onClick={handleDeleteConta} size={isMobile ? 'middle' : 'large'} style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f', color: '#fff', fontWeight: 'bold', width: isMobile ? '100%' : 'auto' }}> Excluir minha conta </Button>
             <p style={{ fontSize: isMobile ? 11 : 12, color: '#ff4d4f', marginTop: 12, marginBottom: 0, fontWeight: 500 }}> ATENÇÃO: Esta ação é irreversível. Todos os seus dados serão permanentemente excluídos. </p>
         </div>
-
-        <Modal title={isEditMode ? 'Editar usuário' : 'Novo usuário'} open={modalUsuarioVisible} onCancel={() => setModalUsuarioVisible(false)} onOk={handleSalvarUsuario} confirmLoading={modalUsuarioLoading} centered width={isMobile ? '90%' : 500}>
-                
-            <Form form={usuarioForm} layout="vertical" size="small">
-                    
-                <Form.Item name="nome" label="Nome" rules={[{ required: true }]}><Input /></Form.Item>
-                <Form.Item name="email" label="E-mail" rules={[{ required: true, type: 'email' }]}><Input /></Form.Item>
-                    
-                    <Form.Item
-  name="senha"
-  label={isEditMode ? 'Nova senha (deixe em branco para não alterar)' : 'Senha'}
-  rules={
-    isEditMode
-      ? [{ min: 6, message: 'Senha deve ter pelo menos 6 caracteres' }]
-      : [
-          { required: true, message: 'Por favor, insira a senha' },
-          { min: 6, message: 'Senha deve ter pelo menos 6 caracteres' },
-        ]
-  }
+        <Modal
+    title={isEditMode ? 'Editar usuário' : 'Novo usuário'}
+    open={modalUsuarioVisible}
+    onCancel={() => {
+        setModalUsuarioVisible(false);
+        setIsEditMode(false);
+        setEditingUser(null);
+        usuarioForm.resetFields(); // 🔥 RESETA AO FECHAR
+    }}
+    onOk={handleSalvarUsuario}
+    confirmLoading={modalUsuarioLoading}
+    centered
+    width={isMobile ? '90%' : 500}
 >
-  <Input.Password />
-</Form.Item>
+    <Form form={usuarioForm} layout="vertical" size="small">
+        <Form.Item name="nome" label="Nome" rules={[{ required: true }]}>
+            <Input />
+        </Form.Item>
+        <Form.Item name="email" label="E-mail" rules={[{ required: true, type: 'email' }]}>
+            <Input />
+        </Form.Item>
+        
+        <Form.Item
+            name="senha"
+            label={isEditMode ? 'Nova senha (deixe em branco para não alterar)' : 'Senha'}
+            rules={
+                isEditMode
+                    ? [{ min: 6, message: 'Senha deve ter pelo menos 6 caracteres' }]
+                    : [
+                        { required: true, message: 'Por favor, insira a senha' },
+                        { min: 6, message: 'Senha deve ter pelo menos 6 caracteres' },
+                      ]
+            }
+        >
+            <Input.Password />
+        </Form.Item>
 
-{!isEditMode && (
-  <Form.Item
-    name="confirmarSenha"
-    label="Confirmar senha"
-    rules={[{ required: true, message: 'Por favor, confirme a senha' }]}
-  >
-    <Input.Password />
-  </Form.Item>
-)}
-                    
-                <Form.Item name="permissao" label="Permissão" rules={[{ required: true }]}>
-                    <Select options={[ { value: 'EDIT', label: 'Edição' }, { value: 'READ', label: 'Leitura' }, ]} />
-                </Form.Item>
-                    
-                <Alert title="A permissão pode ser alterada a qualquer momento." type="info" showIcon style={{ marginTop: 8 }} />
-                    
-            </Form>
-        </Modal>
+        {!isEditMode && (
+            <Form.Item
+                name="confirmarSenha"
+                label="Confirmar senha"
+                rules={[
+                    { required: true, message: 'Por favor, confirme a senha' },
+                    ({ getFieldValue }) => ({
+                        validator(_, value) {
+                            if (!value || getFieldValue('senha') === value) {
+                                return Promise.resolve();
+                            }
+                            return Promise.reject(new Error('As senhas não coincidem!'));
+                        },
+                    }),
+                ]}
+            >
+                <Input.Password />
+            </Form.Item>
+        )}
+        
+        <Form.Item name="permissao" label="Permissão" rules={[{ required: true }]}>
+            <Select options={[
+                { value: 'EDIT', label: 'Edição' },
+                { value: 'READ', label: 'Leitura' },
+            ]} />
+        </Form.Item>
+        
+        <Alert title="A permissão pode ser alterada a qualquer momento." type="info" showIcon style={{ marginTop: 8 }} />
+    </Form>
+</Modal>
         
     </div>
     );
