@@ -253,54 +253,61 @@ function Configuracoes() {
     };
     
     const handleSalvarUsuario = async () => {
-     
+        // Separa validação de API — antd já marca os campos em vermelho
+        let values;
         try {
-     
-            const values = await usuarioForm.validateFields();
-            setModalUsuarioLoading(true);
+            values = await usuarioForm.validateFields();
+        } catch {
+            return;
+        }
     
+        setModalUsuarioLoading(true);
+        try {
             if (isEditMode && editingUser) {
                 const dataToSend = {
                     nome: values.nome,
                     email: values.email,
                     permissao: values.permissao,
                 };
-    
                 if (values.senha && values.senha.trim().length >= 6) {
                     dataToSend.senha = values.senha;
                 }
-    
-                await atualizarUsuario(editingUser.id, dataToSend);
+                const updatedUser = await atualizarUsuario(editingUser.id, dataToSend);
+                // Atualiza direto na lista sem re-fetch
+                setUsuarios(prev => prev.map(u => u.id === editingUser.id ? updatedUser : u));
                 showNotification('success', 'Usuário atualizado com sucesso!');
             } else {
-                await criarUsuario(values);
+                const newUser = await criarUsuario(values);
+                // Adiciona direto na lista sem re-fetch
+                setUsuarios(prev => [...prev, newUser]);
+                setUsuariosPagination(prev => ({ ...prev, total: prev.total + 1 }));
                 showNotification('success', 'Usuário criado com sucesso!');
             }
-    
             setModalUsuarioVisible(false);
-            await carregarUsuarios(0, 10);
-    
         } catch (error) {
             showNotification('error', error.response?.data?.message || 'Erro ao salvar usuário');
         } finally {
             setModalUsuarioLoading(false);
         }
-
     };
-
     const handleExcluirUsuario = (record) => {
-       
-        Modal.confirm({ title: 'Excluir usuário', content: `Tem certeza que deseja excluir "${record.nome}"?`, okText: 'Sim, excluir', cancelText: 'Cancelar', centered: true, onOk: async () => {
-            
-            try {
-                await deletarUsuario(record.id);
-                showNotification('success', 'Usuário excluído com sucesso!');
-                carregarUsuarios(0, usuariosPagination.pageSize);
-            } catch (error) {
-                showNotification('error', error.response?.data?.message || 'Erro ao excluir usuário');
+        Modal.confirm({
+            title: 'Excluir usuário',
+            content: `Tem certeza que deseja excluir "${record.nome}"?`,
+            okText: 'Sim, excluir',
+            cancelText: 'Cancelar',
+            centered: true,
+            onOk: async () => {
+                try {
+                    await deletarUsuario(record.id);
+                    setUsuarios(prev => prev.filter(u => u.id !== record.id));
+                    setUsuariosPagination(prev => ({ ...prev, total: prev.total - 1 }));
+                    showNotification('success', 'Usuário excluído com sucesso!');
+                } catch (error) {
+                    showNotification('error', error.response?.data?.message || 'Erro ao excluir usuário');
+                }
             }
-        }});
-
+        });
     };
 
     const carregarLogs = async (page = 0, size = 10) => {
