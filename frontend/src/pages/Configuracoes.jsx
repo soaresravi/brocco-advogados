@@ -264,7 +264,6 @@ function Configuracoes() {
     };
     
     const handleSalvarUsuario = async () => {
-        // Separa validação de API — antd já marca os campos em vermelho
         let values;
         try {
             values = await usuarioForm.validateFields();
@@ -283,18 +282,26 @@ function Configuracoes() {
                 if (values.senha && values.senha.trim().length >= 6) {
                     dataToSend.senha = values.senha;
                 }
-                const updatedUser = await atualizarUsuario(editingUser.id, dataToSend);
-                // Atualiza direto na lista sem re-fetch
-                setUsuarios(prev => prev.map(u => u.id === editingUser.id ? updatedUser : u));
+                await atualizarUsuario(editingUser.id, dataToSend);
                 showNotification('success', 'Usuário atualizado com sucesso!');
             } else {
-                const newUser = await criarUsuario(values);
-                // Adiciona direto na lista sem re-fetch
-                setUsuarios(prev => [...prev, newUser]);
-                setUsuariosPagination(prev => ({ ...prev, total: prev.total + 1 }));
+                // 🔥 REMOVE O 'confirmarSenha' ANTES DE ENVIAR PARA A API
+                const payload = {
+                    nome: values.nome,
+                    email: values.email,
+                    senha: values.senha,
+                    permissao: values.permissao
+                };
+                
+                await criarUsuario(payload);
                 showNotification('success', 'Usuário criado com sucesso!');
             }
+    
             setModalUsuarioVisible(false);
+            
+            // 🔥 RECARREGA A LISTA DO BACKEND (Garante que os dados reais venham formatados e paginados)
+            await carregarUsuarios(0, usuariosPagination.pageSize);
+    
         } catch (error) {
             showNotification('error', error.response?.data?.message || 'Erro ao salvar usuário');
         } finally {
