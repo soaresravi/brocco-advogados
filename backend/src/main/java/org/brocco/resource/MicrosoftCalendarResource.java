@@ -49,7 +49,7 @@ public class MicrosoftCalendarResource {
         try {
 
             if (code == null || state == null) {
-                return Response.seeOther(URI.create("https://broccoadvogados.tech/callback/microsoft?error=1")).build();
+                return Response.seeOther(URI.create("https://broccoadvogados.tech/auth/microsoft/callback?error=1")).build();
             }
 
             String[] tokens = microsoftService.trocarCodigoPorToken(code);
@@ -65,11 +65,11 @@ public class MicrosoftCalendarResource {
                 user.persist();
             }
 
-            return Response.seeOther(URI.create("https://broccoadvogados.tech/callback/microsoft?success=1")).build();
+            return Response.seeOther(URI.create("https://broccoadvogados.tech/auth/microsoft/callback?success=1")).build();
 
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.seeOther(URI.create("https://broccoadvogados.tech/callback/microsoft?error=1")).build();
+            return Response.seeOther(URI.create("https://broccoadvogados.tech/auth/microsoft/callback?error=1")).build();
         }
 
     }
