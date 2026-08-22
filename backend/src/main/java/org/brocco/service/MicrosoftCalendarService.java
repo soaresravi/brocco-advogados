@@ -28,6 +28,7 @@ public class MicrosoftCalendarService {
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();
+    private static final ZoneId BRASILIA_ZONE = ZoneId.of("America/Sao_Paulo");
 
     public String gerarAuthUrl(String userId) {
         String scope = "https://graph.microsoft.com/Calendars.ReadWrite https://graph.microsoft.com/User.Read offline_access";
@@ -88,8 +89,8 @@ public class MicrosoftCalendarService {
         LocalDateTime startDateTime = LocalDateTime.of(data, java.time.LocalTime.parse(hora));
         LocalDateTime endDateTime = startDateTime.plusMinutes(duracaoMinutos);
 
-        String start = startDateTime.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-        String end = endDateTime.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        String start = startDateTime.atZone(BRASILIA_ZONE).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        String end = endDateTime.atZone(BRASILIA_ZONE).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
         String jsonBody = String.format("""
 

@@ -229,13 +229,12 @@ function Configuracoes() {
     };
 
     const handleNovoUsuario = () => {
+       
         setIsEditMode(false);
         setEditingUser(null);
         
-        // 🔥 RESETA O FORM
         usuarioForm.resetFields();
         
-        // 🔥 SETA VALORES PADRÃO
         usuarioForm.setFieldsValue({
             permissao: 'EDIT',
             senha: '',
@@ -243,28 +242,31 @@ function Configuracoes() {
         });
         
         setModalUsuarioVisible(true);
+        
     };
 
     const handleEditarUsuario = (record) => {
+       
         setIsEditMode(true);
         setEditingUser(record);
-        
-        // 🔥 RESETA O FORM ANTES DE POPULAR
+
         usuarioForm.resetFields();
-        
-        // 🔥 POPULA COM OS VALORES CORRETOS
+
         usuarioForm.setFieldsValue({
             nome: record.nome || '',
             email: record.email || '',
             permissao: record.permissao === 'ADMIN' ? 'EDIT' : record.permissao,
-            senha: '', // Deixa vazio para não expor
+            senha: '',
         });
         
         setModalUsuarioVisible(true);
+    
     };
     
     const handleSalvarUsuario = async () => {
+       
         let values;
+       
         try {
             values = await usuarioForm.validateFields();
         } catch {
@@ -272,20 +274,26 @@ function Configuracoes() {
         }
     
         setModalUsuarioLoading(true);
+       
         try {
+       
             if (isEditMode && editingUser) {
+       
                 const dataToSend = {
                     nome: values.nome,
                     email: values.email,
                     permissao: values.permissao,
                 };
+       
                 if (values.senha && values.senha.trim().length >= 6) {
                     dataToSend.senha = values.senha;
                 }
+       
                 await atualizarUsuario(editingUser.id, dataToSend);
                 showNotification('success', 'Usuário atualizado com sucesso!');
+        
             } else {
-                // 🔥 REMOVE O 'confirmarSenha' ANTES DE ENVIAR PARA A API
+
                 const payload = {
                     nome: values.nome,
                     email: values.email,
@@ -295,11 +303,10 @@ function Configuracoes() {
                 
                 await criarUsuario(payload);
                 showNotification('success', 'Usuário criado com sucesso!');
+           
             }
     
             setModalUsuarioVisible(false);
-            
-            // 🔥 RECARREGA A LISTA DO BACKEND (Garante que os dados reais venham formatados e paginados)
             await carregarUsuarios(0, usuariosPagination.pageSize);
     
         } catch (error) {
@@ -307,25 +314,24 @@ function Configuracoes() {
         } finally {
             setModalUsuarioLoading(false);
         }
+
     };
+
     const handleExcluirUsuario = (record) => {
-        Modal.confirm({
-            title: 'Excluir usuário',
-            content: `Tem certeza que deseja excluir "${record.nome}"?`,
-            okText: 'Sim, excluir',
-            cancelText: 'Cancelar',
-            centered: true,
-            onOk: async () => {
-                try {
-                    await deletarUsuario(record.id);
-                    setUsuarios(prev => prev.filter(u => u.id !== record.id));
-                    setUsuariosPagination(prev => ({ ...prev, total: prev.total - 1 }));
-                    showNotification('success', 'Usuário excluído com sucesso!');
-                } catch (error) {
-                    showNotification('error', error.response?.data?.message || 'Erro ao excluir usuário');
-                }
+       
+        Modal.confirm({ title: 'Excluir usuário', content: `Tem certeza que deseja excluir "${record.nome}"?`, okText: 'Sim, excluir', cancelText: 'Cancelar', centered: true, onOk: async () => {
+       
+            try {
+                await deletarUsuario(record.id);
+                setUsuarios(prev => prev.filter(u => u.id !== record.id));
+                setUsuariosPagination(prev => ({ ...prev, total: prev.total - 1 }));
+                showNotification('success', 'Usuário excluído com sucesso!');
+            } catch (error) {
+                showNotification('error', error.response?.data?.message || 'Erro ao excluir usuário');
             }
-        });
+
+        }});
+
     };
 
     const carregarLogs = async (page = 0, size = 10) => {
@@ -335,6 +341,7 @@ function Configuracoes() {
         try {
 
             const params = { page, size };
+          
             if (filtroAcao) params.acao = filtroAcao;
             if (filtroDataInicio) params.dataInicio = filtroDataInicio.format('YYYY-MM-DD');
             if (filtroDataFim) params.dataFim = filtroDataFim.format('YYYY-MM-DD');
@@ -676,73 +683,42 @@ function Configuracoes() {
             <Button danger icon={<DeleteOutlined />} onClick={handleDeleteConta} size={isMobile ? 'middle' : 'large'} style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f', color: '#fff', fontWeight: 'bold', width: isMobile ? '100%' : 'auto' }}> Excluir minha conta </Button>
             <p style={{ fontSize: isMobile ? 11 : 12, color: '#ff4d4f', marginTop: 12, marginBottom: 0, fontWeight: 500 }}> ATENÇÃO: Esta ação é irreversível. Todos os seus dados serão permanentemente excluídos. </p>
         </div>
-        <Modal
-    title={isEditMode ? 'Editar usuário' : 'Novo usuário'}
-    open={modalUsuarioVisible}
-    onCancel={() => {
-        setModalUsuarioVisible(false);
-        setIsEditMode(false);
-        setEditingUser(null);
-        usuarioForm.resetFields(); // 🔥 RESETA AO FECHAR
-    }}
-    onOk={handleSalvarUsuario}
-    confirmLoading={modalUsuarioLoading}
-    centered
-    width={isMobile ? '90%' : 500}
->
-    <Form form={usuarioForm} layout="vertical" size="small">
-        <Form.Item name="nome" label="Nome" rules={[{ required: true }]}>
-            <Input />
-        </Form.Item>
-        <Form.Item name="email" label="E-mail" rules={[{ required: true, type: 'email' }]}>
-            <Input />
-        </Form.Item>
         
-        <Form.Item
-            name="senha"
-            label={isEditMode ? 'Nova senha (deixe em branco para não alterar)' : 'Senha'}
-            rules={
-                isEditMode
-                    ? [{ min: 6, message: 'Senha deve ter pelo menos 6 caracteres' }]
-                    : [
-                        { required: true, message: 'Por favor, insira a senha' },
-                        { min: 6, message: 'Senha deve ter pelo menos 6 caracteres' },
-                      ]
-            }
-        >
-            <Input.Password />
-        </Form.Item>
-
-        {!isEditMode && (
-            <Form.Item
-                name="confirmarSenha"
-                label="Confirmar senha"
-                rules={[
-                    { required: true, message: 'Por favor, confirme a senha' },
-                    ({ getFieldValue }) => ({
-                        validator(_, value) {
-                            if (!value || getFieldValue('senha') === value) {
-                                return Promise.resolve();
-                            }
-                            return Promise.reject(new Error('As senhas não coincidem!'));
-                        },
-                    }),
-                ]}
-            >
-                <Input.Password />
-            </Form.Item>
-        )}
-        
-        <Form.Item name="permissao" label="Permissão" rules={[{ required: true }]}>
-            <Select options={[
-                { value: 'EDIT', label: 'Edição' },
-                { value: 'READ', label: 'Leitura' },
-            ]} />
-        </Form.Item>
-        
-        <Alert title="A permissão pode ser alterada a qualquer momento." type="info" showIcon style={{ marginTop: 8 }} />
-    </Form>
-</Modal>
+        <Modal title={isEditMode ? 'Editar usuário' : 'Novo usuário'}open={modalUsuarioVisible} onCancel={() => {
+            setModalUsuarioVisible(false);
+            setIsEditMode(false);
+            setEditingUser(null);
+            usuarioForm.resetFields();
+        }} onOk={handleSalvarUsuario} confirmLoading={modalUsuarioLoading} centered width={isMobile ? '90%' : 500}>
+            
+            <Form form={usuarioForm} layout="vertical" size="small">
+                
+                <Form.Item name="nome" label="Nome" rules={[{ required: true }]}><Input /> </Form.Item>
+                <Form.Item name="email" label="E-mail" rules={[{ required: true, type: 'email' }]}> <Input /> </Form.Item>
+                <Form.Item name="senha" label={isEditMode ? 'Nova senha (deixe em branco para não alterar)' : 'Senha'} rules={ isEditMode ? [{ min: 6, message: 'Senha deve ter pelo menos 6 caracteres' }] : [ { required: true, message: 'Por favor, insira a senha' }, { min: 6, message: 'Senha deve ter pelo menos 6 caracteres' },]}><Input.Password /> </Form.Item>
+                
+                {!isEditMode && (
+                
+                    <Form.Item name="confirmarSenha" label="Confirmar senha" rules={[ { required: true, message: 'Por favor, confirme a senha' }, ({ getFieldValue }) => ({ validator(_, value) {
+                        
+                        if (!value || getFieldValue('senha') === value) {
+                            return Promise.resolve();
+                        }
+                        
+                        return Promise.reject(new Error('As senhas não coincidem!'));
+                    
+                    }, }), ]}><Input.Password /> </Form.Item>
+                    
+                )}
+                
+                <Form.Item name="permissao" label="Permissão" rules={[{ required: true }]}>
+                    <Select options={[ { value: 'EDIT', label: 'Edição' }, { value: 'READ', label: 'Leitura' }, ]} />
+                </Form.Item>
+                
+                <Alert title="A permissão pode ser alterada a qualquer momento." type="info" showIcon style={{ marginTop: 8 }} />
+            
+            </Form>
+        </Modal>
         
     </div>
     );
