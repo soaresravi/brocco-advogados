@@ -97,7 +97,7 @@ function App() {
         <Route path="/login" element={<Navigate to="/dashboard" replace />} />
         
         <Route path="/dashboard" element={<DashboardPrincipal />} />
-        <Route path="/callback/microsoft" element={<MicrosoftCallback />} />
+        <Route path="/oauth/microsoft" element={<MicrosoftCallback />} />
        
         <Route path="/clientes/lista" element={<ClienteLista /> } />
         <Route path="/clientes/dashboard" element={<ClientesDashboard /> } />
