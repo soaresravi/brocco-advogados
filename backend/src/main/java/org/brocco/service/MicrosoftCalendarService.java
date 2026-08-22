@@ -115,7 +115,7 @@ public class MicrosoftCalendarService {
 
             }
 
-        """, titulo, descricao, start, ZoneId.systemDefault().toString(), end, ZoneId.systemDefault().toString());
+        """, titulo, descricao, start, BRASILIA_ZONE.toString(), end, BRASILIA_ZONE.toString());
 
         HttpRequest request = HttpRequest.newBuilder().uri(java.net.URI.create("https://graph.microsoft.com/v1.0/me/events")).header("Authorization", "Bearer " + accessToken).header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonBody)).build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -129,12 +129,12 @@ public class MicrosoftCalendarService {
 
         String accessToken = renovarAccessToken(refreshToken);
 
-        LocalDateTime starDateTime = LocalDateTime.of(data, java.time.LocalTime.parse(hora));
-        LocalDateTime enDateTime = starDateTime.plusMinutes(duracaoMinutos);
+        LocalDateTime startDateTime = LocalDateTime.of(data, java.time.LocalTime.parse(hora));
+        LocalDateTime endDateTime = startDateTime.plusMinutes(duracaoMinutos);
 
-        String start = starDateTime.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-        String end = enDateTime.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-
+        String start = startDateTime.atZone(BRASILIA_ZONE).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        String end = endDateTime.atZone(BRASILIA_ZONE).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+    
         String jsonBody = String.format("""
 
             {
@@ -158,7 +158,7 @@ public class MicrosoftCalendarService {
 
             }
 
-        """, titulo, descricao, start, ZoneId.systemDefault().toString(), end, ZoneId.systemDefault().toString());
+        """, titulo, descricao, start, BRASILIA_ZONE.toString(), end, BRASILIA_ZONE.toString());
 
         HttpRequest request = HttpRequest.newBuilder().uri(java.net.URI.create("https://graph.microsoft.com/v1.0/me/events/" + eventId)).header("Authorization", "Bearer " + accessToken).header("Content-Type", "application/json").method("PATCH", HttpRequest.BodyPublishers.ofString(jsonBody)).build();
         httpClient.send(request, HttpResponse.BodyHandlers.ofString());
