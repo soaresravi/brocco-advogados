@@ -213,8 +213,9 @@ public class ProvidenciaResource {
         if (request.enviarParaId != null) {
 
             User user = User.findById(request.enviarParaId);
-
-            if (user == null || !user.adminId.equals(adminId)) {
+            Long destAdminId = user.adminId != null ? user.adminId : user.id;
+            
+            if (user == null || !destAdminId.equals(adminId)) {
                 return Response.status(404).entity(new ErroResponse(404, "Não encontrado", "Usuário para notificação não encontrado", uriInfo.getPath())).build();
             }
             
@@ -223,8 +224,9 @@ public class ProvidenciaResource {
         if (request.distribuirParaId != null) {
 
             User user = User.findById(request.distribuirParaId);
-
-            if (user == null || !user.adminId.equals(adminId)) {
+            Long destAdminId = user != null ? (user.adminId != null ? user.adminId : user.id) : null;
+            
+            if (user == null || !destAdminId.equals(adminId)) {
                 return Response.status(404).entity(new ErroResponse(404, "Não encontrado", "Usuário para tarefa não encontrado", uriInfo.getPath())).build();
             }
 
