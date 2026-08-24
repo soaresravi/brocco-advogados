@@ -229,20 +229,11 @@ function Configuracoes() {
     };
 
     const handleNovoUsuario = () => {
-       
         setIsEditMode(false);
         setEditingUser(null);
-        
         usuarioForm.resetFields();
-        
-        usuarioForm.setFieldsValue({
-            permissao: 'EDIT',
-            senha: '',
-            confirmarSenha: '',
-        });
-        
+        usuarioForm.setFieldsValue({ permissao: 'EDIT' });
         setModalUsuarioVisible(true);
-        
     };
 
     const handleEditarUsuario = (record) => {
