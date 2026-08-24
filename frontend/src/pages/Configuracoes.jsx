@@ -42,7 +42,7 @@ function Configuracoes() {
     const [usuarioForm] = Form.useForm();
 
     const userData = JSON.parse(localStorage.getItem('user') || '{}');
-    const isAdmin = userData.permissao === 'ADMIN';
+    const isAdmin = userData?.permissao?.toUpperCase() === 'ADMIN';
 
     const showNotification = (type, msg) => {
 
@@ -212,13 +212,14 @@ function Configuracoes() {
         try {
 
             const response = await getUsuarios(page, size);
-            setUsuarios(response.content || []);
-
-            setUsuariosPagination({
-                current: response.page + 1,
-                pageSize: response.size,
-                total: response.total,
-            });
+            const lista = Array.isArray(response) ? response : (response.content || []);
+          
+            setUsuarios(lista);
+            
+            setUsuariosPagination(prev => ({
+                ...prev,
+                total: response.total || lista.length
+            }));
 
         } catch (error) {
             console.error('Erro ao carregar usuários:', error);
