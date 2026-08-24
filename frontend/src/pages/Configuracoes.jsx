@@ -256,58 +256,57 @@ function Configuracoes() {
     };
     
     const handleSalvarUsuario = async () => {
-        console.log('1. Iniciando tentativa de salvar...');
-    
+       
+        let values;
+       
         try {
-            const values = await usuarioForm.validateFields();
-            console.log('2. Campos validados com sucesso:', values);
+            values = await usuarioForm.validateFields();
+        } catch {
+            return;
+        }
     
-            setModalUsuarioLoading(true);
-    
+        setModalUsuarioLoading(true);
+       
+        try {
+       
             if (isEditMode && editingUser) {
+       
                 const dataToSend = {
                     nome: values.nome,
                     email: values.email,
                     permissao: values.permissao,
                 };
-    
+       
                 if (values.senha && values.senha.trim().length >= 6) {
                     dataToSend.senha = values.senha;
                 }
-    
-                console.log('3. Enviando atualização:', dataToSend);
+       
                 await atualizarUsuario(editingUser.id, dataToSend);
                 showNotification('success', 'Usuário atualizado com sucesso!');
+        
             } else {
+
                 const payload = {
                     nome: values.nome,
                     email: values.email,
                     senha: values.senha,
                     permissao: values.permissao
                 };
-    
-                console.log('3. Enviando criação de novo usuário:', payload);
-                const resposta = await criarUsuario(payload);
-                console.log('4. Resposta do Backend:', resposta);
-    
+                
+                await criarUsuario(payload);
                 showNotification('success', 'Usuário criado com sucesso!');
+           
             }
     
             setModalUsuarioVisible(false);
             await carregarUsuarios(0, usuariosPagination.pageSize);
     
         } catch (error) {
-            // Exibe no Console F12 a linha e o motivo exato da falha
-            console.error('ERRO DETECTADO:', error);
-            
-            if (error.errorFields) {
-                showNotification('error', 'Preencha todos os campos obrigatórios corretamente.');
-            } else {
-                showNotification('error', error.response?.data?.message || 'Erro ao salvar usuário');
-            }
+            showNotification('error', error.response?.data?.message || 'Erro ao salvar usuário');
         } finally {
             setModalUsuarioLoading(false);
         }
+
     };
 
     const handleExcluirUsuario = (record) => {
