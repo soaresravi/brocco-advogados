@@ -68,16 +68,8 @@ public class WhatsAppResource {
     }
 
     private Long getAdminId() {
-
-        Object adminIdClaim = jwt.getClaim("adminId");
-        
-        if (adminIdClaim != null) {
-            return ((Number) adminIdClaim).longValue();
-        }
-
         User currentUser = User.findById(getUserId());
         return currentUser.adminId != null ? currentUser.adminId : currentUser.id;
-   
     }
 
     private boolean canEdit() {

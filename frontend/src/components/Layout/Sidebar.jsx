@@ -60,7 +60,7 @@ function Sidebar({ onCollapseChange, isMobile }) {
         { key: 'atendimentos', icon: <FileTextOutlined />, label: 'Atendimentos', children: [
             { key: '/atendimentos/dashboard', icon: <BarChartOutlined />, label: 'Dashboard', onClick: () => navigate('/atendimentos/dashboard'), },
             { key: '/atendimentos/lista', icon: <UnorderedListOutlined />, label: 'Parlatório', onClick: () => navigate('/atendimentos/lista'), },
-            { key: '/atendimentos/whatsapp', icon: <WhatsAppOutlined />, label: 'WhatsApp', onClick: () => navigate('/atendimentos/whatsapp'), },
+            { key: '/atendimentos/whatsapp', icon: <WhatsAppOutlined />, label: 'Histórico de contatos', onClick: () => navigate('/atendimentos/whatsapp'), },
             { key: '/atendimentos/providencias', icon: <ToolOutlined />, label: 'Providências', onClick: () => navigate('/atendimentos/providencias'), },
         ],},
 
