@@ -224,7 +224,7 @@ public class TarefaResource {
         logService.registrar(getUserId(),"CREATE","Tarefa",entity.id, "Criou tarefa: " + (entity.tarefa != null ? entity.tarefa.substring(0, Math.min(50, entity.tarefa.length())) : "sem descrição"), getClientIp(), getUserAgent());
        
         if (!microsoftOk) {
-            return Response.status(498).entity(Map.of("message", "Token do Microsoft Outlook expirado. Reconecte sua conta.","microsoftTokenExpirado", true)).build();
+            return Response.status(498).entity(Map.of("message", "Token do Microsoft Outlook expirado. Reconecte sua conta nas configurações.","microsoftTokenExpirado", true)).build();
         }
         
         return Response.status(Response.Status.CREATED).entity(toResponse(entity)).build();
@@ -257,7 +257,7 @@ public class TarefaResource {
         logService.registrar(getUserId(),"UPDATE","Tarefa", entity.id, "Atualizou tarefa: " + (tarefaAntiga != null ? tarefaAntiga.substring(0, Math.min(50, tarefaAntiga.length())) : "sem descrição"), getClientIp(), getUserAgent());
       
         if (!microsoftOk) {
-            return Response.status(498).entity(Map.of("message", "Token do Microsoft Outlook expirado. Reconecte sua conta.","microsoftTokenExpirado", true)).build();
+            return Response.status(498).entity(Map.of("message", "Token do Microsoft Outlook expirado. Reconecte sua conta nas configurações.","microsoftTokenExpirado", true)).build();
         }
         
         return Response.ok(toResponse(entity)).build();

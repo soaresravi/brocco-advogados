@@ -28,3 +28,8 @@ export const getMicrosoftAuthUrl = async () => {
 export const disconnectMicrosoft = async () => {
     await api.delete('/auth/microsoft/disconnect');
 };
+
+export const getEventosOutlook = async (dias = 7) => {
+    const response = await api.get('/auth/microsoft/eventos', { params: { dias } });
+    return response.data;
+};

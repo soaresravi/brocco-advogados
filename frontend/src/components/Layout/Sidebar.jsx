@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Layout, Menu, Drawer } from 'antd';
+import { Layout, Menu, Drawer, Badge } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {  DashboardOutlined, TeamOutlined, FolderOutlined, CalendarOutlined, DollarOutlined, CheckSquareOutlined, SettingOutlined, BarChartOutlined, UnorderedListOutlined, ScheduleOutlined, FileTextOutlined, SwapOutlined, WalletOutlined, MenuUnfoldOutlined, MenuFoldOutlined, MenuOutlined, BellOutlined, MessageOutlined, WhatsAppOutlined, ToolOutlined, AuditOutlined, ProjectOutlined} from '@ant-design/icons';
+import { getContadorNotificacoes, getConversas } from '../../services/notificacaoService'; 
 
 import './AppLayout.css';
 
@@ -14,6 +15,7 @@ function Sidebar({ onCollapseChange, isMobile }) {
 
     const [collapsed, setCollapsed] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [totalNaoLidas, setTotalNaoLidas] = useState(0);
 
     useEffect(() => {
 
@@ -23,6 +25,36 @@ function Sidebar({ onCollapseChange, isMobile }) {
         }
 
     }, [isMobile]);
+
+    useEffect(() => {
+       
+        carregarContagemNaoLidas();
+        const interval = setInterval(carregarContagemNaoLidas, 30000);
+        const handleUpdate = () => carregarContagemNaoLidas();
+        window.addEventListener('notificacoes-atualizadas', handleUpdate);
+        
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener('notificacoes-atualizadas', handleUpdate);
+        };
+
+    }, []);
+
+    const carregarContagemNaoLidas = async () => {
+      
+        try {
+
+            const notificacoes = await getContadorNotificacoes();
+            const conversas = await getConversas();
+            const mensagensNaoLidas = conversas.reduce((acc, c) => acc + (c.naoLidas || 0), 0);
+            
+            setTotalNaoLidas((notificacoes.naoLidas || 0) + mensagensNaoLidas);
+      
+        } catch (error) {
+            console.error('Erro ao carregar contagem:', error);
+        }
+
+    };
 
     const toggleCollapsed = () => {
 
@@ -39,7 +71,10 @@ function Sidebar({ onCollapseChange, isMobile }) {
     const menuItems = [
         
         { key: '/dashboard', icon: <DashboardOutlined />, label: 'Painel de controle', onClick: () => navigate('/dashboard'), },
-        { key: 'notificacoes', icon: <BellOutlined />, label: 'Chat e alertas', onClick: () => navigate('/notificacoes'), },
+       
+        { key: 'notificacoes', icon: <BellOutlined />, label: ( <span> Chat/Alertas {totalNaoLidas > 0 && (
+            <Badge count={totalNaoLidas} style={{ backgroundColor: '#ff4d4f', marginLeft: 4, fontSize: 10, minWidth: 16, height: 16, lineHeight: '16px', padding: '0 4px' }} /> )} </span>
+        ), onClick: () => navigate('/notificacoes'), },
         
         { key: 'clientes', icon: <TeamOutlined />, label: 'Clientes', children: [
             { key: '/clientes/dashboard', icon: <BarChartOutlined />, label: 'Dashboard', onClick: () => navigate('/clientes/dashboard'), },
@@ -48,7 +83,8 @@ function Sidebar({ onCollapseChange, isMobile }) {
 
         { key: 'processos', icon: <FolderOutlined />, label: 'Processos', children: [
             { key: '/processos/dashboard', icon: <BarChartOutlined />, label: 'Dashboard', onClick: () => navigate('/processos/dashboard'), },
-            { key: '/processos/lista', icon: <UnorderedListOutlined />, label: 'Processos', onClick: () => navigate('/processos/lista'), },
+            { key: '/processos/lista', icon: <UnorderedListOutlined />, label: 'P. Criminais', onClick: () => navigate('/processos/lista'), },
+            { key: '/processos-diversos/lista', icon: <UnorderedListOutlined />, label: 'P. Diversos', onClick: () => navigate('/processos-diversos/lista'), },
             { key: '/processos/prazos', icon: <ScheduleOutlined />, label: 'Prazos', onClick: () => navigate('/processos/prazos'), },
         ],},
 

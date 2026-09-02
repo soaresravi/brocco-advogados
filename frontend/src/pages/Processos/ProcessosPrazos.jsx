@@ -71,9 +71,9 @@ function ProcessosPrazos() {
     const colunasLista = [
         
         { title: 'ID', dataIndex: 'id', width: isMobile ? 60 : 70 },
-        { title: 'Nº Processo', dataIndex: 'numeroProcesso', width: isMobile ? 150 : 200 },
+        { title: 'Nº do processo', dataIndex: 'numeroProcesso', width: isMobile ? 150 : 200 },
         { title: 'Cliente', dataIndex: 'clienteNome', width: isMobile ? 120 : 200 },
-        { title: 'Data do Prazo', dataIndex: 'dataPrazo', width: isMobile ? 100 : 120, render: (text) => text ? dayjs(text).format('DD/MM/YYYY') : '-' },
+        { title: 'Data do prazo', dataIndex: 'dataPrazo', width: isMobile ? 100 : 120, render: (text) => text ? dayjs(text).format('DD/MM/YYYY') : '-' },
         
         { title: 'Status', key: 'status', width: isMobile ? 110 : 120, render: (_, record) => {
         
@@ -191,7 +191,7 @@ function ProcessosPrazos() {
             
             <Tabs activeKey={activeTab} onChange={setActiveTab} type="card" size="small" className="custom-tabs" items={[
                 
-                { key: 'lista', label: 'Lista de Prazos', children: (
+                { key: 'lista', label: 'Lista de prazos', children: (
                 
                     <div>
                         

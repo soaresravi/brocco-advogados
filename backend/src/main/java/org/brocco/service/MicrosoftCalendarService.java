@@ -11,6 +11,7 @@ import java.net.http.*;
 import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import com.fasterxml.jackson.databind.*;
 
@@ -70,18 +71,28 @@ public class MicrosoftCalendarService {
     }
 
     public String renovarAccessToken(String refreshToken) throws Exception {
-
+       
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new RuntimeException("invalid_grant: Refresh token ausente ou nulo.");
+        }
+    
         String url = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
         String body = "client_id=" + clientId + "&client_secret=" + clientSecret + "&refresh_token=" + refreshToken + "&grant_type=refresh_token";
-
+    
         HttpRequest request = HttpRequest.newBuilder().uri(java.net.URI.create(url)).header("Content-Type", "application/x-www-form-urlencoded").POST(HttpRequest.BodyPublishers.ofString(body)).build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
+        
         JsonNode json = mapper.readTree(response.body());
+    
+        if (response.statusCode() >= 400 || !json.has("access_token")) {
+            String errorMsg = json.path("error_description").asText(response.body());
+            throw new RuntimeException("invalid_grant: " + errorMsg);
+        }
+    
         return json.get("access_token").asText();
-
-    };
-
+  
+    }
+  
     public String criarEvento(String refreshToken, String titulo, String descricao, LocalDate data, String hora, Long duracaoMinutos) throws Exception {
 
         String accessToken = renovarAccessToken(refreshToken);
@@ -163,6 +174,64 @@ public class MicrosoftCalendarService {
         HttpRequest request = HttpRequest.newBuilder().uri(java.net.URI.create("https://graph.microsoft.com/v1.0/me/events/" + eventId)).header("Authorization", "Bearer " + accessToken).header("Content-Type", "application/json").method("PATCH", HttpRequest.BodyPublishers.ofString(jsonBody)).build();
         httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
+    }
+   
+    public List<Map<String, Object>> buscarEventos(String refreshToken, LocalDate dataInicio, LocalDate dataFim) throws Exception {
+       
+        String accessToken = renovarAccessToken(refreshToken);
+        String startDateTime = dataInicio.atStartOfDay(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        String endDateTime = dataFim.atTime(23, 59, 59).atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        String url = String.format("https://graph.microsoft.com/v1.0/me/calendarview?startDateTime=%s&endDateTime=%s&$orderby=start/dateTime", startDateTime, endDateTime);
+
+        HttpRequest request = HttpRequest.newBuilder().uri(java.net.URI.create(url)).header("Authorization", "Bearer " + accessToken).header("Content-Type", "application/json").GET().build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        
+        System.out.println("[DEBUG Microsoft] Status Buscar Eventos: " + response.statusCode());
+
+        if (response.statusCode() >= 400) {
+            System.err.println("[DEBUG Microsoft] Body Buscar Eventos Error: " + response.body());
+            throw new RuntimeException("Erro na Graph API (" + response.statusCode() + "): " + response.body());
+        }
+
+        JsonNode json = mapper.readTree(response.body());
+        List<Map<String, Object>> eventos = new ArrayList<>();
+
+        if (json.has("value") && json.get("value").isArray()) {
+           
+            for (JsonNode item : json.get("value")) {
+           
+                Map<String, Object> evento = new HashMap<>();
+
+                evento.put("id", item.path("id").asText(""));
+                evento.put("titulo", item.path("subject").asText("Sem título"));
+                evento.put("descricao", item.path("body").path("content").asText(""));
+                evento.put("local", item.path("location").path("displayName").asText(""));
+
+                String startStr = item.path("start").path("dateTime").asText("");
+          
+                if (!startStr.isEmpty()) {
+          
+                    String timeZone = item.path("start").path("timeZone").asText("UTC");
+                    LocalDateTime startDateTimeObj = LocalDateTime.parse(startStr.substring(0, 19), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+                    if (!"America/Sao_Paulo".equals(timeZone)) {
+                        ZonedDateTime zoned = startDateTimeObj.atZone(ZoneId.of(timeZone)).withZoneSameInstant(ZoneId.of("America/Sao_Paulo"));
+                        evento.put("data", zoned.toLocalDate());
+                        evento.put("hora", zoned.toLocalTime().toString().substring(0, 5));
+                    } else {
+                        evento.put("data", startDateTimeObj.toLocalDate());
+                        evento.put("hora", startDateTimeObj.toLocalTime().toString().substring(0, 5));
+                    }
+          
+                }
+
+                eventos.add(evento);
+          
+            }
+        }
+
+        return eventos;
+  
     }
 
     public void deletarEvento(String refreshToken, String eventId) throws Exception {

@@ -13,7 +13,8 @@ import jakarta.ws.rs.core.*;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.net.URI;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 
 @Path("/auth/microsoft")
 @Produces(MediaType.APPLICATION_JSON)
@@ -72,6 +73,34 @@ public class MicrosoftCalendarResource {
             return Response.seeOther(URI.create("https://broccoadvogados.tech/oauth/microsoft?error=1")).build();
         }
 
+    }
+
+    @GET
+    @Path("/eventos")
+    @RolesAllowed("USER")
+    
+    public Response buscarEventos(@QueryParam("dias") @DefaultValue("7") int dias) {
+        
+        try {
+            
+            User user = User.findById(getUserId());
+            
+            if (user.microsoftRefreshToken == null || user.microsoftRefreshToken.isEmpty()) {
+                return Response.ok(Map.of("connected", false, "eventos", Collections.emptyList())).build();
+            }
+            
+            LocalDate hoje = LocalDate.now();
+            LocalDate dataFim = hoje.plusDays(dias);
+            
+            List<Map<String, Object>> eventos = microsoftService.buscarEventos(user.microsoftRefreshToken, hoje, dataFim);
+            return Response.ok(Map.of("connected", true, "eventos", eventos)).build();
+        
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar eventos do Outlook: " + e.getMessage());
+            boolean expirado = microsoftService.isTokenExpirado(e);
+            return Response.ok(Map.of("connected", !expirado, "eventos", Collections.emptyList(), "erro", e.getMessage())).build();
+        }
+    
     }
 
     @GET

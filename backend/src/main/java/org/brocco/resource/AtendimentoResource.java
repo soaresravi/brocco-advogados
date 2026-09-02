@@ -184,7 +184,7 @@ public class AtendimentoResource {
         logService.registrar(getUserId(),"CREATE","Atendimento", entity.id, "Criou atendimento para: " + entity.nome, getClientIp(), getUserAgent());
         
         if (!microsoftOk) {
-            return Response.status(498).entity(Map.of("message", "Token do Microsoft Outlook expirado. Reconecte sua conta.", "microsoftTokenExpirado", true)).build();
+            return Response.status(498).entity(Map.of("message", "Token do Microsoft Outlook expirado. Reconecte sua conta nas configurações.", "microsoftTokenExpirado", true)).build();
         }
         
         return Response.status(Response.Status.CREATED).entity(toResponse(entity)).build();
@@ -217,7 +217,7 @@ public class AtendimentoResource {
         logService.registrar(getUserId(),"UPDATE","Atendimento", entity.id, "Atualizou atendimento: " + nomeAntigo + " -> " + entity.nome, getClientIp(), getUserAgent());
         
         if (!microsoftOk) {
-            return Response.status(498).entity(Map.of("message", "Token do Microsoft Outlook expirado. Reconecte sua conta.", "microsoftTokenExpirado", true)).build();
+            return Response.status(498).entity(Map.of("message", "Token do Microsoft Outlook expirado. Reconecte sua conta nas configurações.", "microsoftTokenExpirado", true)).build();
         }
         
         return Response.ok(toResponse(entity)).build();

@@ -174,7 +174,7 @@ public class AudienciaResource {
         logService.registrar(getUserId(),"CREATE","Audiência", entity.id, "Criou audiência para processo: " + entity.processoNumero, getClientIp(), getUserAgent());
         
         if (!microsoftOk) {
-            return Response.status(498).entity(Map.of("message", "Token do Microsoft Outlook expirado. Reconecte sua conta.", "microsoftTokenExpirado", true)).build();
+            return Response.status(498).entity(Map.of("message", "Token do Microsoft Outlook expirado. Reconecte sua conta nas configurações.", "microsoftTokenExpirado", true)).build();
         }
         
         return Response.status(Response.Status.CREATED).entity(toResponse(entity)).build();
@@ -214,7 +214,7 @@ public class AudienciaResource {
         logService.registrar(getUserId(),"UPDATE","Audiência", entity.id, "Atualizou audiência: " + processoNumeroAntigo + " -> " + entity.processoNumero, getClientIp(), getUserAgent());
         
         if (!microsoftOk) {
-            return Response.status(498).entity(Map.of("message", "Token do Microsoft Outlook expirado. Reconecte sua conta.", "microsoftTokenExpirado", true)).build();
+            return Response.status(498).entity(Map.of("message", "Token do Microsoft Outlook expirado. Reconecte sua conta nas configurações.", "microsoftTokenExpirado", true)).build();
         }
         
         return Response.ok(toResponse(entity)).build();

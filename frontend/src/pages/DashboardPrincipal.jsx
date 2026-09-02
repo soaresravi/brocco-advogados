@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card, Row, Col, Statistic, Spin, Button, Tag, Space, Badge, List } from 'antd';
-import { FolderOutlined, TeamOutlined, CalendarOutlined, WarningOutlined, ReloadOutlined, ClockCircleOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { FolderOutlined, WindowsOutlined, TeamOutlined, CalendarOutlined, WarningOutlined, ReloadOutlined, ClockCircleOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 import dayjs from 'dayjs';
@@ -9,12 +9,15 @@ import 'dayjs/locale/pt-br';
 dayjs.locale('pt-br');
 
 import api from '../api/api';
+import { getEventosOutlook } from '../services/configService';
 
 function DashboardPrincipal() {
 
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
     const [isMobile, setIsMobile] = useState(false);
+    const [eventosOutlook, setEventosOutlook] = useState([]);
+    const [outlookConnected, setOutlookConnected] = useState(false);
 
     const navigate = useNavigate();
 
@@ -27,21 +30,43 @@ function DashboardPrincipal() {
 
     useEffect(() => {
         carregarDashboard();
+        carregarEventosOutlook();
     }, []);
 
     const carregarDashboard = async () => {
-
+    
         setLoading(true);
-
+    
         try {
-            const response = await api.get('/painel');
-            setData(response.data);
+       
+            const [painel, eventos] = await Promise.all([
+                api.get('/painel'),
+                getEventosOutlook(7).catch(() => ({ connected: false, eventos: [] }))
+            ]);
+            
+            setData(painel.data);
+            setOutlookConnected(eventos.connected);
+            setEventosOutlook(eventos.eventos || []);
+       
         } catch (error) {
             console.error('Erro ao carregar dashboard:', error);
         } finally {
             setLoading(false);
         }
+    
+    };
 
+    const carregarEventosOutlook = async () => {
+       
+        try {
+            const response = await getEventosOutlook(7);
+            setOutlookConnected(response.connected);
+            setEventosOutlook(response.eventos || []);
+        } catch (error) {
+            console.error('Erro ao carregar eventos do Outlook:', error);
+            setEventosOutlook([]);
+        }
+    
     };
 
     const getUrgenciaColor = (urgencia) => {
@@ -214,6 +239,60 @@ function DashboardPrincipal() {
             )}
 
         </Card>
+
+        {outlookConnected && eventosOutlook.length > 0 && (
+        
+            <Card size="small" title={
+            
+                <Space>
+                    <WindowsOutlined style={{ color: '#0078d4' }} />
+                    <span style={{ color: '#1a3a5c' }}>Próximos eventos (Outlook)</span>
+                    <Badge count={eventosOutlook.length} style={{ backgroundColor: '#0078d4' }} />
+                </Space>
+            
+            } style={{ marginBottom: 20 }}>
+                
+                <div style={{ maxHeight: 250, overflowY: 'auto' }}>
+            
+                    {eventosOutlook.slice(0, 7).map((evento, index) => (
+                        
+                        <div key={evento.id || index} style={{ padding: '8px 12px', borderBottom: index < eventosOutlook.length - 1 ? '1px solid #f0f0f0' : 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            
+                            <div>
+                                
+                                <div style={{ fontWeight: 500, fontSize: 13, color: '#1a3a5c' }}>
+                                    {evento.titulo}
+                                </div>
+                                
+                                <div style={{ fontSize: 12, color: '#64748b' }}>
+                                    {evento.data && dayjs(evento.data).format('DD/MM/YYYY')} 
+                                    {evento.hora && ` às ${evento.hora}`}
+                                    {evento.local && ` • ${evento.local}`}
+                                </div>
+            
+                            </div>
+        
+                            <Tag color="blue" style={{ fontSize: 9 }}>
+                                {evento.data && dayjs(evento.data).isSame(dayjs(), 'day') ? 'Hoje' : evento.data && dayjs(evento.data).isSame(dayjs().add(1, 'day'), 'day') ? 'Amanhã' : ''}
+                            </Tag>
+                        
+                        </div>
+                    
+                    ))}
+                
+                </div>
+            
+                {eventosOutlook.length > 7 && (
+                    
+                    <div style={{ textAlign: 'center', marginTop: 8, fontSize: 12, color: '#94a3b8' }}>
+                        + {eventosOutlook.length - 7} outros eventos
+                    </div>
+                
+                )}
+            
+            </Card>
+        
+        )}
         
         <Card size="small" title={
             

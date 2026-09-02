@@ -1,22 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
 import { Card, Tabs, Tag, Button, Space, Typography, Empty, Spin, Input, Avatar, Badge, Modal, message, Tooltip } from 'antd';
-import { BellOutlined, CheckOutlined, DeleteOutlined, MessageOutlined, SendOutlined, UserOutlined, CheckCircleOutlined, ClockCircleOutlined, WarningOutlined, InfoCircleOutlined, ReloadOutlined } from '@ant-design/icons';
+import { BellOutlined, PlusOutlined, CheckOutlined, DeleteOutlined, MessageOutlined, SendOutlined, UserOutlined, CheckCircleOutlined, ClockCircleOutlined, WarningOutlined, InfoCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/pt-br';
 
-import { getNotificacoes, marcarTodasNotificacoesComoLidas, marcarNotificacaoComoLida, deletarNotificacao, limparNotificacoesAntigas, getConversas, getMensagens, enviarMensagem, getUsuariosSimples, getContadorNotificacoes } from '../services/notificacaoService';
+import { getNotificacoes,deletarConversa, marcarTodasNotificacoesComoLidas, marcarNotificacaoComoLida, deletarNotificacao, limparNotificacoesAntigas, getConversas, getMensagens, enviarMensagem, getUsuariosSimples, getContadorNotificacoes } from '../services/notificacaoService';
 
 dayjs.extend(relativeTime);
 dayjs.locale('pt-br');
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 const { TextArea } = Input;
 
 function NotificacoesChat() {
 
-    const [loading, setLoading] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [activeTab, setActiveTab] = useState('notificacoes');
 
@@ -33,6 +32,9 @@ function NotificacoesChat() {
     const [enviando, setEnviando] = useState(false);
     const [usuarios, setUsuarios] = useState([]);
     const [ws, setWs] = useState(null);
+
+    const [novaConversaVisible, setNovaConversaVisible] = useState(false);
+    const [usuariosDisponiveis, setUsuariosDisponiveis] = useState([]);
 
     const mensagensEndRef = useRef(null);
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -335,6 +337,7 @@ function NotificacoesChat() {
         }
 
     };
+
     const handleEnviarMensagem = async () => {
       
         if (!mensagemInput.trim() || !conversaSelecionada) return;
@@ -399,6 +402,18 @@ function NotificacoesChat() {
         
         }});
 
+    };
+
+    const handleNovaConversa = () => {
+        const usuariosEmConversa = conversas.map(c => c.usuarioId);
+        const disponiveis = Object.values(usuarios).filter(u => !usuariosEmConversa.includes(u.id));
+        setUsuariosDisponiveis(disponiveis);
+        setNovaConversaVisible(true);
+    };
+    
+    const iniciarConversa = (usuarioId) => {
+        setNovaConversaVisible(false);
+        selecionarConversa(usuarioId);
     };
 
     const renderNotificacoes = () => (
@@ -502,9 +517,10 @@ function NotificacoesChat() {
         
         <div style={{ width: isMobile ? '100%' : 280, borderRight: isMobile ? 'none' : '1px solid #f0f0f0', overflowY: 'auto', display: isMobile && conversaSelecionada ? 'none' : 'block' }}>
             
-            <div style={{ padding: 12, borderBottom: '1px solid #f0f0f0' }}>
-                <Title level={5} style={{ margin: 0, color: '#1a3a5c' }}> <MessageOutlined /> Conversas </Title>
-            </div>
+        <div style={{ padding: 12, borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Title level={5} style={{ margin: 0, color: '#1a3a5c' }}> <MessageOutlined /> Conversas </Title>
+            <Button type="primary" size="small" icon={<PlusOutlined />} onClick={handleNovaConversa} style={{ background: 'linear-gradient(135deg, #0d1239 0%, #131a53 100%)' }}> Nova conversa </Button>
+        </div>
             
             {conversas.length === 0 ? (
                 <Empty description="Nenhuma conversa" />
@@ -661,6 +677,44 @@ function NotificacoesChat() {
             ]} />
 
         </Card>
+
+        <Modal title="Nova conversa" open={novaConversaVisible} onCancel={() => setNovaConversaVisible(false)} footer={null} centered width={isMobile ? '90%' : 400}>
+            
+            {usuariosDisponiveis.length === 0 ? (
+                <Empty description="Todos os usuários já têm conversa" />
+            ) : (
+            
+                <div>
+                    
+                    {usuariosDisponiveis.map((user) => (
+                    
+                        <div key={user.id} style={{ cursor: 'pointer', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, borderRadius: 8, borderBottom: '1px solid #f0f0f0', transition: 'background 0.2s', }} onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'} onClick={() => { const novaConversa = {
+                            usuarioId: user.id,
+                            usuarioNome: user.nome,
+                            ultimaMensagem: 'Nenhuma mensagem ainda',
+                            ultimaData: null,
+                            naoLidas: 0
+                        };
+                        
+                        setConversas(prev => [novaConversa, ...prev]);
+                        setNovaConversaVisible(false);
+                        selecionarConversa(user.id);
+                        
+                        }}>
+                            
+                            <Avatar icon={<UserOutlined />} style={{ background: '#131a53' }} />
+                            
+                            <div>
+                                <div style={{ fontWeight: 500 }}>{user.nome}</div>
+                                <div style={{ fontSize: 12, color: '#8c8c8c' }}>{user.email}</div>
+                            </div>
+                            
+                        </div>
+                        
+                    ))}
+                </div>
+            )}
+        </Modal>
         
     </div>
     );

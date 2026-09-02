@@ -25,6 +25,7 @@ import RecebimentoLista from './pages/Financeiro/RecebimentoLista';
 import DespesaLista from './pages/Financeiro/DespesaLista';
 import NotificacoesChat from './pages/NotificacoesChat';
 import Configuracoes from './pages/Configuracoes';
+import ProcessoDiversoLista from './pages/Processos/ProcessoDiversoLista';
 
 function App() {
   
@@ -103,6 +104,7 @@ function App() {
         <Route path="/clientes/dashboard" element={<ClientesDashboard /> } />
        
         <Route path="/processos/lista" element={<ProcessoLista /> } />
+        <Route path="/processos-diversos/lista" element={<ProcessoDiversoLista />} />
         <Route path="/processos/dashboard" element={<ProcessosDashboard /> } />
         <Route path="/processos/prazos" element={<ProcessosPrazos /> } />
        

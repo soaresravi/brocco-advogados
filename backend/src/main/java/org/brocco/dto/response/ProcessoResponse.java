@@ -18,4 +18,7 @@ public class ProcessoResponse {
     public BigDecimal honorarios;
     public List<MovimentacaoResponse> movimentacoes;
     public LocalDateTime createdAt, updatedAt;
+    public TipoProcesso tipoProcesso;
+    public Qualificacao qualificacao;
+    public String comarca, varaOrgaoJulgador, areaJuridica, observacoes;
 }

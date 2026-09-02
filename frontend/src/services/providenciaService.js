@@ -35,3 +35,8 @@ export const getUsuariosSimples = async () => {
     const response = await api.get('/users/simples');
     return response.data;
 };
+
+export const criarClienteRapido = async (data) => {
+    const response = await api.post('/clientes', data);
+    return response.data;
+};

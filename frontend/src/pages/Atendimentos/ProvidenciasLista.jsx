@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Table, Input, Button, DatePicker, Space, Modal, Form, Select, Row, Col, Card, notification, Drawer, Typography, Tag, Checkbox, Spin } from 'antd';
+import { Table, Alert, Input, Button, DatePicker, Space, Modal, Form, Select, Row, Col, Card, notification, Drawer, Typography, Tag, Checkbox, Spin } from 'antd';
 import { SearchOutlined, EditOutlined, DeleteOutlined, ReloadOutlined, PlusOutlined, MoreOutlined } from '@ant-design/icons';
-import { getProvidencias, createProvidencia, updateProvidencia, deleteProvidencia, buscarClientesProvidencia, getUsuariosSimples } from '../../services/providenciaService';
+import { getProvidencias, criarClienteRapido, createProvidencia, updateProvidencia, deleteProvidencia, buscarClientesProvidencia, getUsuariosSimples } from '../../services/providenciaService';
 
 import dayjs from 'dayjs';
 
@@ -47,6 +47,10 @@ function ProvidenciasLista() {
     const [clientesLoading, setClientesLoading] = useState(false);
     const [usuarios, setUsuarios] = useState([]);
 
+    const [clienteRapidoVisible, setClienteRapidoVisible] = useState(false);
+    const [clienteRapidoLoading, setClienteRapidoLoading] = useState(false);
+
+    const [clienteRapidoForm] = Form.useForm();
     const [form] = Form.useForm();
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -265,6 +269,48 @@ function ProvidenciasLista() {
 
     };
 
+    const handleAbrirClienteRapido = () => {
+        clienteRapidoForm.resetFields();
+        setClienteRapidoVisible(true);
+    };
+
+    const handleSalvarClienteRapido = async () => {
+       
+        try {
+       
+            const values = await clienteRapidoForm.validateFields();
+            setClienteRapidoLoading(true);
+            
+            const dataToSend = {
+
+                nome: values.nome,
+                cpf: values.cpf,
+
+                contratantes: [
+                    { nome: values.contratante, telefone: values.telefone, }
+                ]
+
+            };
+            
+            const novoCliente = await criarClienteRapido(dataToSend); 
+            await buscarClientes('');
+           
+            form.setFieldsValue({
+                clienteId: novoCliente.id
+            });
+            
+            setClienteRapidoVisible(false);
+            showNotification('success', 'Cliente criado com sucesso!');
+            
+        } catch (error) {
+            console.error('Erro detalhado:', error);
+            showNotification('error', error.response?.data?.message || 'Erro ao criar cliente');
+        } finally {
+            setClienteRapidoLoading(false);
+        }
+
+    };
+
     const columns = [
        
         { title: 'ID', dataIndex: 'id', width: 60 },
@@ -455,13 +501,32 @@ function ProvidenciasLista() {
                     
                         <Form.Item name="clienteId" label="Cliente" rules={[{ required: true, message: 'Selecione um cliente' }]}>
                             
-                            <Select size="small" placeholder="Selecione um cliente" showSearch={{ filterOption: (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase()), onSearch: buscarClientes }} options={clientesOptions.map(c => ({ value: c.id, label: `${c.nome} ${c.matriculaSap ? `- ${c.matriculaSap}` : ''}`, }))} loading={clientesLoading} notFoundContent={clientesLoading ? 'Buscando...' : 'Digite para buscar clientes'} onFocus={() => {
+                            <Select size="small" placeholder="Selecione ou cadastre um cliente" showSearch={{ filterOption: (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase()), onSearch: buscarClientes }} options={clientesOptions.map(c => ({ value: c.id, label: `${c.nome} ${c.matriculaSap ? `- ${c.matriculaSap}` : ''}`, }))} loading={clientesLoading} notFoundContent={ clientesLoading ? 'Buscando...' : (
                             
+                                <div style={{ textAlign: 'center', padding: 8 }}>    
+                                    <span>Nenhum cliente encontrado. </span>
+                                    <Button type="link" onClick={handleAbrirClienteRapido} style={{ padding: 0 }}> Cadastrar novo? </Button>
+                                </div>
+                            
+                            )} onFocus={() => {
+                       
                                 if (clientesOptions.length === 0) {
                                     buscarClientes('');
                                 }
-                        
-                            }} disabled={isReadOnly} />
+                            
+                            }} disabled={isReadOnly} popupRender={(menu) => (
+                            
+                                <>
+                                
+                                    {menu}
+                                    
+                                    <div style={{ padding: '8px', borderTop: '1px solid #f0f0f0' }}>
+                                        <Button type="link" icon={<PlusOutlined />} onClick={handleAbrirClienteRapido} style={{ padding: 0 }}> Cadastrar novo cliente </Button>
+                                    </div>
+                                
+                                </>
+                            
+                            )} />
                         
                         </Form.Item>
                     
@@ -525,6 +590,32 @@ function ProvidenciasLista() {
 
                 </Form>
         </Modal>
+
+        <Modal title="Cadastro rápido de cliente" open={clienteRapidoVisible} onCancel={() => setClienteRapidoVisible(false)} onOk={handleSalvarClienteRapido} confirmLoading={clienteRapidoLoading} centered width={isMobile ? '90%' : 450} okText="Salvar cliente" cancelText="Cancelar">
+            
+            <Form form={clienteRapidoForm} layout="vertical" size="small">
+           
+                <Form.Item name="nome" label="Nome" rules={[{ required: true, message: 'Nome é obrigatório' }]}>
+                    <Input placeholder="Nome completo" />
+                </Form.Item>
+                
+                <Form.Item name="cpf" label="CPF" rules={[ { required: true, message: 'CPF é obrigatório' }, ]}>
+                    <Input placeholder="000.000.000-00" />
+                </Form.Item>
+                
+                <Form.Item name="contratante" label="Nome do contratante" rules={[{ required: true, message: 'Contratante é obrigatório' }]}>
+                    <Input placeholder="Nome do contratante" />
+                </Form.Item>
+                
+                <Form.Item name="telefone" label="Telefone do contratante" rules={[ { required: true, message: 'Telefone é obrigatório' }, ]}>
+                    <Input placeholder="9 0000-0000" />
+                </Form.Item>
+                
+                <Alert title="Cadastro rápido" description="Após criar, você pode editar informações adicionais na aba Clientes." type="info" showIcon style={{ marginTop: 8 }} />
+            
+            </Form>
+        </Modal>
+    
     </div>
     );
 }

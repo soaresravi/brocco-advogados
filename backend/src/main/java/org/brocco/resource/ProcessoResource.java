@@ -78,7 +78,7 @@ public class ProcessoResource {
 
     @GET
 
-    public Response listar(@QueryParam("page") @DefaultValue("0") int page, @QueryParam("size") @DefaultValue("10") int size, @QueryParam("search") String search, @QueryParam("situacao") String situacao, @QueryParam("regime") String regime, @QueryParam("prazoEmAberto") Boolean prazoEmberto) {
+    public Response listar(@QueryParam("page") @DefaultValue("0") int page, @QueryParam("size") @DefaultValue("10") int size, @QueryParam("search") String search, @QueryParam("situacao") String situacao, @QueryParam("regime") String regime, @QueryParam("prazoEmAberto") Boolean prazoEmberto, @QueryParam("tipo") String tipo) {
 
         Long adminId = getAdminId();
 
@@ -126,6 +126,22 @@ public class ProcessoResource {
             params.add(prazoEmberto);
         }
 
+        if (tipo != null && !tipo.isEmpty()) {
+         
+            try {
+                TipoProcesso tipoEnum = TipoProcesso.valueOf(tipo.toUpperCase());
+                query.append(" and tipoProcesso = ?").append(params.size() + 1);
+                params.add(tipoEnum);
+            } catch (IllegalArgumentException e) {
+                System.out.println("error");
+            }
+            
+        } else {
+            query.append(" and (tipoProcesso IS NULL OR tipoProcesso != ?").append(params.size() + 1);
+            params.add(TipoProcesso.DIVERSO);
+            query.append(")");
+        }
+    
         query.append(" order by id desc");
         long total = Processo.find(query.toString(), params.toArray()).count();
 
@@ -578,6 +594,13 @@ public class ProcessoResource {
         response.lapsoProximo = entity.isLapsoProximo();
         response.createdAt = entity.createdAt;
         response.updatedAt = entity.updatedAt;
+        response.tipoProcesso = entity.tipoProcesso;
+        response.qualificacao = entity.qualificacao;
+        response.comarca = entity.comarca;
+        response.varaOrgaoJulgador = entity.varaOrgaoJulgador;
+        response.areaJuridica = entity.areaJuridica;
+        response.observacoes = entity.observacoes;
+    
 
         if (entity.cliente != null) {
 
@@ -622,6 +645,12 @@ public class ProcessoResource {
         entity.dataPrazo = request.dataPrazo;
         entity.lapsoProgressao = request.lapsoProgressao;
         entity.honorarios = request.honorarios;
+        entity.tipoProcesso = request.tipoProcesso != null ? request.tipoProcesso : TipoProcesso.CRIMINAL;
+        entity.qualificacao = request.qualificacao;
+        entity.comarca = request.comarca;
+        entity.varaOrgaoJulgador = request.varaOrgaoJulgador;
+        entity.areaJuridica = request.areaJuridica;
+        entity.observacoes = request.observacoes;
 
         if (entity.cliente != null) {
             entity.matriculaSap = entity.cliente.matriculaSap;

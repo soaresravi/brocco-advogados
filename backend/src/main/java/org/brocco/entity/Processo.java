@@ -6,8 +6,10 @@ import java.math.BigDecimal;
 import java.time.*;
 import java.util.*;
 
+import org.brocco.enums.Qualificacao;
 import org.brocco.enums.RegimePrisional;
 import org.brocco.enums.SituacaoProcesso;
+import org.brocco.enums.TipoProcesso;
 
 @Entity
 @Table(name = "processos")
@@ -51,6 +53,28 @@ public class Processo extends PanacheEntity {
 
     @OneToMany(mappedBy = "processo", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<Movimentacao> movimentacoes = new ArrayList<>();
+
+    @Column(name = "tipo_processo")
+    @Enumerated(EnumType.STRING)
+    
+    public TipoProcesso tipoProcesso = TipoProcesso.CRIMINAL;
+    
+    @Column(name = "qualificacao")
+    @Enumerated(EnumType.STRING)
+    
+    public Qualificacao qualificacao;
+    
+    @Column(name = "comarca")
+    public String comarca;
+    
+    @Column(name = "vara_orgao_julgador")
+    public String varaOrgaoJulgador;
+    
+    @Column(name = "area_juridica")
+    public String areaJuridica;
+    
+    @Column(columnDefinition = "LONGTEXT")
+    public String observacoes;
 
     @Column(name = "created_at")
     public LocalDateTime createdAt;
