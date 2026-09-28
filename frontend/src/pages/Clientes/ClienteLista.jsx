@@ -249,7 +249,7 @@ function ClienteLista() {
             <Button type="link" style={{ padding: 0, color: '#1a3a5c' }} onClick={() => handleViewDetails(record)}> {text} </Button>
         ),},
         
-        { title: 'CPF', dataIndex: 'cpf', width: 130 },
+        { title: 'CP/CNPJ', dataIndex: 'cpf', width: 130 },
         { title: 'Matrícula SAP', dataIndex: 'matriculaSap', width: 120 },
         
         { title: 'Regime', dataIndex: 'regimePrisional', width: 130, render: (text) => {
@@ -294,7 +294,7 @@ function ClienteLista() {
                 <Col xs={24} md={16}>
                     
                     <Space wrap style={{ width: isMobile ? '100%' : 'auto' }}>
-                        <Input placeholder="Buscar por nome, matrícula, CPF ou processo" value={searchText} onChange={handleSearch} style={{ width: isMobile ? '100%' : 280 }} prefix={<SearchOutlined />} allowClear />    
+                        <Input placeholder="Buscar por nome, matrícula, CPF/CNPJ ou processo" value={searchText} onChange={handleSearch} style={{ width: isMobile ? '100%' : 280 }} prefix={<SearchOutlined />} allowClear />    
                         {!isMobile && <FilterSection />}
                         <Button onClick={handleReset} icon={<ReloadOutlined />}> Limpar </Button>
                     </Space>
@@ -348,7 +348,7 @@ function ClienteLista() {
                                     <Row gutter={[6, 4]}>
                                         
                                         <Col span={12}>
-                                            <Typography.Text type="secondary" style={{ fontSize: 10 }}>CPF</Typography.Text>
+                                            <Typography.Text type="secondary" style={{ fontSize: 10 }}>CPF/CNPJ</Typography.Text>
                                             <div style={{ fontSize: 11 }}>{record.cpf || '-'}</div>
                                         </Col>
                                             
@@ -483,7 +483,7 @@ function ClienteLista() {
                         
                     <Col span={10}>
                             
-                        <Form.Item name="cpf" label="CPF" style={{ marginBottom: 8 }}>
+                        <Form.Item name="cpf" label="CPF/CNPJ" style={{ marginBottom: 8 }}>
                             <Input size="small" />
                         </Form.Item>
                         

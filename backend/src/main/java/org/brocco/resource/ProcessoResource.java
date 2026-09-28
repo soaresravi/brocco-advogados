@@ -77,7 +77,6 @@ public class ProcessoResource {
     }
 
     @GET
-
     public Response listar(@QueryParam("page") @DefaultValue("0") int page, @QueryParam("size") @DefaultValue("10") int size, @QueryParam("search") String search, @QueryParam("situacao") String situacao, @QueryParam("regime") String regime, @QueryParam("prazoEmAberto") Boolean prazoEmberto, @QueryParam("tipo") String tipo) {
 
         Long adminId = getAdminId();
@@ -150,6 +149,36 @@ public class ProcessoResource {
 
         return Response.ok(new PageResponse<>(responses, total, page, size)).build();
 
+    }
+
+    @GET
+    @Path("/options")
+    @RolesAllowed("USER")
+    
+    public Response listarOptions(@QueryParam("search") String search) {
+        
+        Long adminId = getAdminId();
+        
+        StringBuilder query = new StringBuilder("adminId = ?1");
+        List<Object> params = new ArrayList<>();
+        
+        params.add(adminId);
+        
+        if (search != null && !search.isEmpty()) {
+            query.append(" and (numeroProcesso like ?").append(params.size() + 1);
+            params.add("%" + search + "%");
+            query.append(" or cliente.nome like ?").append(params.size() + 1);
+            params.add("%" + search + "%");
+            query.append(")");
+        }
+        
+        query.append(" order by id desc");
+        
+        List<Processo> processos = Processo.find(query.toString(), params.toArray()).list();
+        List<ProcessoResponse> responses = processos.stream().map(this::toResponse).collect(Collectors.toList());
+        
+        return Response.ok(responses).build();
+    
     }
 
     @GET
