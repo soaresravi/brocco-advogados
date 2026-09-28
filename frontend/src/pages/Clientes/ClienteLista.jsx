@@ -249,7 +249,7 @@ function ClienteLista() {
             <Button type="link" style={{ padding: 0, color: '#1a3a5c' }} onClick={() => handleViewDetails(record)}> {text} </Button>
         ),},
         
-        { title: 'CP/CNPJ', dataIndex: 'cpf', width: 130 },
+        { title: 'CPF/CNPJ', dataIndex: 'cpf', width: 130 },
         { title: 'Matrícula SAP', dataIndex: 'matriculaSap', width: 120 },
         
         { title: 'Regime', dataIndex: 'regimePrisional', width: 130, render: (text) => {
